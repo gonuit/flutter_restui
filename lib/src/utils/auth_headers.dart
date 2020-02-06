@@ -2,8 +2,6 @@ part of rest_ui;
 
 // TODO: add afterware
 
-
-
 /// Keeps headers needed for authorization
 class AuthHeaders {
   final Map<String, String> _headers;
@@ -69,4 +67,58 @@ class AuthHeaders {
 
   @override
   String toString() => _headers.toString();
+}
+
+class RestQuery {
+  final Map<String, String> headers;
+  final dynamic body;
+
+  RestQuery({
+    @required this.headers,
+    @required this.body,
+  });
+}
+
+abstract class RestLink<I, O> {
+  final String debugLabel;
+  RestLink([this.debugLabel]);
+  RestLink _nextLink;
+  RestLink _prevLink;
+
+  RestLink chain<O>(RestLink<I, O> nextLink) {
+    _nextLink = nextLink;
+    return nextLink;
+  }
+
+  O next(I dataIn) {
+    assert((() {
+      print(debugLabel);
+      return true;
+    })());
+
+    if (_nextLink == null && dataIn is O) return dataIn;
+    return _nextLink?.next(dataIn);
+  }
+}
+
+class AuthLink extends RestLink<int, int> {
+  AuthLink(String a) : super(a);
+
+  @override
+  int next(int dataIn) {
+    return super.next(dataIn);
+  }
+}
+
+class Test {
+  void test() {
+    final link = AuthLink("1")
+      ..chain<int>(AuthLink("2"))
+          .chain<int>(AuthLink("3"))
+          .chain<int>(AuthLink("4"))
+          .chain<int>(AuthLink("5"));
+
+    final response = link.next(1);
+    print("response: $response");
+  }
 }

@@ -16,7 +16,7 @@ class ExamplePhotoModel {
     final uri = Uri.parse(downloadUrl);
     final newUri = uri.replace(
       pathSegments: uri.pathSegments.sublist(0, uri.pathSegments.length - 2)
-        ..add("400"),
+        ..add("300"),
     );
     return newUri.toString();
   }
