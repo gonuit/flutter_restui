@@ -12,8 +12,9 @@ class ExampleApi extends ApiBase {
 
   ExampleApi({
     @required Uri uri,
+    RestLink link,
     Map<String, String> defaultHeaders,
-  }) : super(uri: uri, defaultHeaders: defaultHeaders) {
+  }) : super(uri: uri, defaultHeaders: defaultHeaders, link: link) {
     _photos = _PhotoQueries(this);
   }
 }

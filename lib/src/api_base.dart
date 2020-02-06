@@ -7,10 +7,11 @@ part of rest_ui;
 /// add your own methods / requests
 ///
 /// Use call method to hand
-abstract class ApiBase {
+@mustCallSuper
+abstract class ApiBase extends _LinkBase {
   final Uri _uri;
-  final AuthHeaders _authHeaders;
   final Map<String, String> _defaultHeaders;
+  final RestLink _link;
 
   /// Client is needed for persistent connection
   final http.Client _client;
@@ -32,17 +33,36 @@ abstract class ApiBase {
     }
   }
 
+  @override
+  Future<http.Response> _next(http.BaseRequest request) async {
+    assert((() {
+      print("API");
+      return true;
+    })());
+
+    http.StreamedResponse streamedResponse = await _client.send(request);
+    return http.Response.fromStream(streamedResponse);
+  }
+
   ApiBase({
     @required Uri uri,
+    RestLink link,
     Map<String, String> defaultHeaders,
   })  : assert(uri != null, "Api widget should be provided with uri argument"),
         _uri = uri,
         _defaultHeaders = defaultHeaders ?? const <String, String>{},
-        _authHeaders = AuthHeaders(),
-        _client = http.Client();
+        _link = link,
+        _client = http.Client() {
+    /// If link is provided close link chain
+    _link?._closeChainWith(this);
+  }
+
+  /// Get first link of provided type
+  RestLink getFirstLinkOfType<T>() =>
+      _link?._firstWhere((_LinkBase link) => link is T);
 
   /// Make [MultipartRequest] without files
-  Future<http.Response> _makeMultipartRequest(
+  Future<http.BaseRequest> _makeMultipartRequest(
     Uri uri, {
     @required HttpMethod method,
     @required Map<String, String> requestHeaders,
@@ -72,12 +92,11 @@ abstract class ApiBase {
       request.files.add(multipartFile);
     }
 
-    http.StreamedResponse streamedResponse = await _client.send(request);
-    return http.Response.fromStream(streamedResponse);
+    return request;
   }
 
   /// Make [Request] without files
-  Future<http.Response> _makeRequest(
+  Future<http.BaseRequest> _makeRequest(
     Uri uri, {
     @required HttpMethod method,
     @required Map<String, String> requestHeaders,
@@ -99,8 +118,7 @@ abstract class ApiBase {
       else
         throw ArgumentError('Invalid request body "$body".');
     }
-    http.StreamedResponse streamedResponse = await _client.send(request);
-    return http.Response.fromStream(streamedResponse);
+    return request;
   }
 
   /// Call rest api
@@ -123,14 +141,11 @@ abstract class ApiBase {
 
     /// Sets headers
     Map<String, String> requestHeaders = {};
-    requestHeaders
-      ..addAll(_defaultHeaders)
-      ..addAll(_authHeaders.headers)
-      ..addAll(headers);
+    requestHeaders..addAll(_defaultHeaders)..addAll(headers);
 
     final hasFiles = fileFields != null && fileFields.isNotEmpty;
 
-    http.Response response = await (hasFiles
+    http.BaseRequest request = await (hasFiles
         ? _makeMultipartRequest(
             uri,
             fileFields: fileFields,
@@ -146,9 +161,11 @@ abstract class ApiBase {
             requestHeaders: requestHeaders,
           ));
 
-    /// Sets headers
-    _authHeaders.headers = response.headers;
-    return response;
+    /// If _link is NOT a [RestLink] it is [ApiBase]
+    /// then not
+    return _link is RestLink
+        ? (_link as RestLink).next(request)
+        : _link._next(request);
   }
 
   /// closes http client

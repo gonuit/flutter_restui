@@ -1,7 +1,6 @@
 library rest_ui;
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,7 +12,8 @@ import 'package:http/http.dart' as http;
 
 part './src/widgets/query.dart';
 part './src/api_base.dart';
-part './src/utils/auth_headers.dart';
 part './src/utils/caller.dart';
 part './src/utils/exceptions.dart';
 part './src/utils/data.dart';
+part './src/utils/link.dart';
+part './src/links/headers_mapper_link.dart';
