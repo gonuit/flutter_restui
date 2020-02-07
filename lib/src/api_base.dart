@@ -50,8 +50,9 @@ abstract class ApiBase extends ApiLink {
   ApiLink getFirstLinkOfType<T>() =>
       _link?._firstWhere((ApiLink link) => link is T);
 
-  /// Call rest api
-  /// Automaticly handle and update [AuthHeaders]
+  /// Call rest API by triggering the query lifecycle.
+  /// Constructs [ApiRequest] object and invoke [ApiLink]s chain,
+  /// then returns data received from it.
   Future<ApiResponse> call({
     @required String endpoint,
     Map<String, dynamic> body = const <String, String>{},
@@ -85,6 +86,7 @@ abstract class ApiBase extends ApiLink {
     );
 
     /// If _link does not exist call [this] link
+    /// ([ApiBase] is also an [ApiLink])
     return _link != null ? _link.next(apiRequest) : this.next(apiRequest);
   }
 
