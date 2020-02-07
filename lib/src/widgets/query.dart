@@ -11,7 +11,7 @@ typedef QueryCallBuilder<R, A> = Future<R> Function(
 typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
 
 /// Widget responsible for refreshing part of the tree with updated data
-/// 
+///
 /// If you want to have full controll when [callBuilder] will be called.
 /// Provide this widget with a key argument of type `GlobalKey<QueryState<R,A>>`.
 /// Then you can trigger the query lifecycle by `call` method invocation on
@@ -47,6 +47,10 @@ class Query<R, A extends ApiBase> extends StatefulWidget {
 
   @override
   QueryState createState() => QueryState<R, A>();
+
+  /// Retrieve API created and provided by [RestuiProvider]
+  static A of<A extends ApiBase>(BuildContext context) =>
+      _InheritedRestuiProvider.of(context)?.api;
 }
 
 class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
@@ -62,7 +66,14 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
 
   /// Creates caller
   Caller<R> _createAndReplaceCaller() {
-    final api = Provider.of<A>(context);
+    /// Retrieve API created and provided by [RestuiProvider]
+    final api = Query.of<A>(context);
+
+    if (api == null)
+      throw ApiException(
+        "Api cannot be null.\n"
+        "Did you forget to wrap widgets tree with RestuiProvider?",
+      );
     return _caller = Caller<R>(
       () async => widget._callBuilder(context, api),
       interval: widget._interval,

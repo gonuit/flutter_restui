@@ -101,7 +101,7 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
 
   Future<ExamplePhotoModel> _requestRandomPhoto() async {
     
-    /// Retrive api instance from context
+    /// Retrieve api instance from context
     final api = Provider.of<Api>(context);
 
     /// Make API request
@@ -172,7 +172,7 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
 `ApiLink` object is kind of a middleware that enables you to add some custom
 behaviour before and after every API request.
   
-Links can be then retrived from your API class [MORE](#22-get-data-from-the-link).
+Links can be then Retrieved from your API class [MORE](#22-get-data-from-the-link).
 
 ### 2.2 Built-in ApiLinks
 
