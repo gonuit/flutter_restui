@@ -8,7 +8,7 @@ part of rest_ui;
 ///
 /// Use call method to hand
 @mustCallSuper
-abstract class ApiBase extends _LinkBase {
+abstract class ApiBase extends RestLink {
   final Uri _uri;
   final Map<String, String> _defaultHeaders;
   final RestLink _link;
@@ -33,13 +33,10 @@ abstract class ApiBase extends _LinkBase {
     }
   }
 
+  /// Call api
   @override
-  Future<http.Response> _next(http.BaseRequest request) async {
-    assert((() {
-      print("API");
-      return true;
-    })());
-
+  @protected
+  Future<http.Response> next(http.BaseRequest request) async {
     http.StreamedResponse streamedResponse = await _client.send(request);
     return http.Response.fromStream(streamedResponse);
   }
@@ -59,7 +56,7 @@ abstract class ApiBase extends _LinkBase {
 
   /// Get first link of provided type
   RestLink getFirstLinkOfType<T>() =>
-      _link?._firstWhere((_LinkBase link) => link is T);
+      _link?._firstWhere((RestLink link) => link is T);
 
   /// Make [MultipartRequest] without files
   Future<http.BaseRequest> _makeMultipartRequest(
@@ -161,11 +158,8 @@ abstract class ApiBase extends _LinkBase {
             requestHeaders: requestHeaders,
           ));
 
-    /// If _link is NOT a [RestLink] it is [ApiBase]
-    /// then not
-    return _link is RestLink
-        ? (_link as RestLink).next(request)
-        : _link._next(request);
+    /// If _link does not exist call [this] link
+    return _link != null ? _link.next(request) : this.next(request);
   }
 
   /// closes http client
