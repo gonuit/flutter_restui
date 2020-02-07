@@ -8,10 +8,10 @@ graphQL client links) and use `Query` widget to make API calls right from the wi
   - [1. Getting Started](#1-getting-started)
       - [1.1. First create your Api object class by extending `BaseApi` class](#11-first-create-your-api-object-class-by-extending-baseapi-class)
       - [1.2 Provide your Api instance down the widget tree](#12-provide-your-api-instance-down-the-widget-tree)
-      - [1.3.1 To make an api call in standard way](#131-to-make-an-api-call-in-standard-way)
+      - [1.3.1 To make an api call in standard (ugly 😏) way](#131-to-make-an-api-call-in-standard-ugly-%f0%9f%98%8f-way)
       - [1.3.2 Or simply make use of `Query` widget to make the call from widget tree](#132-or-simply-make-use-of-query-widget-to-make-the-call-from-widget-tree)
   - [2. ApiLinks](#2-apilinks)
-    - [2.1 What is ApiLink](#21-what-is-apilink)
+    - [2.1 About ApiLink](#21-about-apilink)
     - [2.2 Built-in ApiLinks](#22-built-in-apilinks)
       - [2.2.1 HeadersMapperLink](#221-headersmapperlink)
     - [2.3 Create own ApiLink](#23-create-own-apilink)
@@ -61,13 +61,16 @@ class Api extends ApiBase {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     /// To provide your api use [RestuiProvider] widget or
     /// [Provider] from [provider] package
     /// in place of `<Api>` put your api class name / type
     return RestuiProvider<Api>(
         create: (_) => Api(
+
           /// Pass base uri adress thats points to your api
           uri: Uri.parse("https://picsum.photos"),
+
           /// Add links if needed
           /// For more invormation look at [HeadersMapperLink] and [DebugLink]
           /// links descriptions
@@ -83,19 +86,25 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-#### 1.3.1 To make an api call in standard way
+#### 1.3.1 To make an api call in standard (ugly 😏) way
 ```dart
 class _ApiExampleScreenState extends State<ApiExampleScreen> {
   ExamplePhotoModel _randomPhoto;
 
   @override
   void initState() {
-    _requestRandomPhoto();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _requestRandomPhoto();
+    })
     super.initState();
   }
 
   Future<ExamplePhotoModel> _requestRandomPhoto() async {
+    
+    /// Retrive api instance from context
     final api = Provider.of<Api>(context);
+
+    /// Make API request
     final photo = await api.getRandomPhoto();
     setState({
       _randomPhoto = photo;
@@ -159,7 +168,7 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
 
 ## 2. ApiLinks
 
-### 2.1 What is ApiLink
+### 2.1 About ApiLink
 `ApiLink` object is kind of a middleware that enables you to add some custom
 behaviour before and after every API request.
   
@@ -232,5 +241,4 @@ print(link.ongoingRequests);
 `Api` should be replaced with your API class name that extends `ApiBase`.
 
 ## 3. TODO:
-  - Add tests
   - Remove `provider` from dependency
