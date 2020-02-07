@@ -25,7 +25,8 @@ dependencies:
     - [2.3 Create own ApiLink](#23-create-own-apilink)
       - [2.3.1 Create link](#231-create-link)
       - [2.3.3 Get data from the link](#233-get-data-from-the-link)
-  - [3. TODO:](#3-todo)
+  - [3. Example app](#3-example-app)
+  - [4. TODO:](#4-todo)
 
 ## 1. Getting Started
 
@@ -247,8 +248,11 @@ print(link.ongoingRequests);
 ```
 `Api` should be replaced with your API class name that extends `ApiBase`.
 
-
-## 3. TODO:
+## 3. Example app
+Inside `example` directory you can find an example app and play with this library.
+![screen](./example/screen.png)
+  
+## 4. TODO:
   - Tests
   - Improve readme
   - Add `CacheLink` which will be responsible for request caching
