@@ -34,15 +34,15 @@ class QueryState<R, A> extends State<Query<R, A>> {
   @override
   void didChangeDependencies() {
     if (_caller == null) {
-      _createCaller();
+      _createAndReplaceCaller();
     }
     super.didChangeDependencies();
   }
 
   /// Creates caller
-  void _createCaller() {
+  Caller<R> _createAndReplaceCaller() {
     final api = Provider.of<A>(context);
-    _caller = Caller<R>(
+    return Caller<R>(
       () async => widget._callBuilder(api),
       interval: widget._interval,
     )..addListener(_handleChange);
@@ -63,7 +63,7 @@ class QueryState<R, A> extends State<Query<R, A>> {
       _disposeCaller();
 
       /// replace old caller with new one
-      _createCaller();
+      _createAndReplaceCaller();
     }
     super.didUpdateWidget(oldWidget);
   }
