@@ -1,24 +1,41 @@
 part of restui;
 
-class RestuiProvider<T extends ApiBase> extends StatefulWidget {
-  final Widget child;
+typedef ContextCreator<R> = R Function(BuildContext);
 
-  final Create<T> create;
+/// Provides API that extends [ApiBase] created by [apiBuilder]
+/// down the widget tree.
+///
+/// It is required for the widget [Query] to work properly
+/// 
+/// API created by [apiBuilder] can be retrieved from children's
+///  [BuildContext] by calling [Query.of<A extends ApiBase>(context)]
+///  where [A] is yours API class name
+class RestuiProvider<A extends ApiBase> extends StatefulWidget {
+  final Widget _child;
+
+  final ContextCreator<A> _apiBuilder;
+
   RestuiProvider({
-    @required this.child,
-    @required this.create,
-  });
+    @required Widget child,
+    @required ContextCreator<A> apiBuilder,
+  })  : assert(
+          apiBuilder != null,
+          "Create method is required and connot be null"
+          "as it is responsible for api creation",
+        ),
+        _child = child,
+        _apiBuilder = apiBuilder;
   @override
-  _RestuiProviderState<T> createState() => _RestuiProviderState<T>();
+  _RestuiProviderState<A> createState() => _RestuiProviderState<A>();
 }
 
-class _RestuiProviderState<T extends ApiBase> extends State<RestuiProvider> {
-  T api;
+class _RestuiProviderState<A extends ApiBase> extends State<RestuiProvider> {
+  A api;
 
   @override
   void didChangeDependencies() {
     /// build api only for the first time
-    api ??= widget.create(context);
+    api ??= widget._apiBuilder(context);
     assert(api != null, "API returned from create method cannot be null");
     super.didChangeDependencies();
   }
@@ -30,12 +47,10 @@ class _RestuiProviderState<T extends ApiBase> extends State<RestuiProvider> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return _InheritedRestuiProvider(
-      api: api,
-      child: widget.child,
-    );
-  }
+  Widget build(BuildContext context) => _InheritedRestuiProvider<A>(
+        api: api,
+        child: widget._child,
+      );
 }
 
 class _InheritedRestuiProvider<A extends ApiBase> extends InheritedWidget {
@@ -51,6 +66,6 @@ class _InheritedRestuiProvider<A extends ApiBase> extends InheritedWidget {
   bool updateShouldNotify(_InheritedRestuiProvider oldWidget) =>
       api != oldWidget.api;
 
-  factory _InheritedRestuiProvider.of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_InheritedRestuiProvider>();
+  static _InheritedRestuiProvider of<A extends ApiBase>(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_InheritedRestuiProvider<A>>();
 }

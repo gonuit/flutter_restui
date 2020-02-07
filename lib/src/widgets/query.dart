@@ -49,8 +49,9 @@ class Query<R, A extends ApiBase> extends StatefulWidget {
   QueryState createState() => QueryState<R, A>();
 
   /// Retrieve API created and provided by [RestuiProvider]
-  static A of<A extends ApiBase>(BuildContext context) =>
-      _InheritedRestuiProvider.of(context)?.api;
+  static A of<A extends ApiBase>(BuildContext context) {
+    return _InheritedRestuiProvider.of<A>(context)?.api;
+  }
 }
 
 class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
@@ -63,6 +64,13 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
     }
     super.didChangeDependencies();
   }
+
+  /// Return closure with [BuildContext] that calls original [onComplete]
+  /// method if it is available otherwise returns null.
+  ValueChanged<R> _getOnCompleteCallback(BuildContext context) =>
+      widget._onComplete != null
+          ? (R value) => widget._onComplete(context, value)
+          : null;
 
   /// Creates caller
   Caller<R> _createAndReplaceCaller() {
@@ -81,7 +89,7 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
       instantCall: widget._instantCall,
 
       /// Adds context to onComplete method
-      onComplete: (R value) => widget._onComplete(context, value),
+      onComplete: _getOnCompleteCallback(context),
     )..addListener(_handleChange);
   }
 

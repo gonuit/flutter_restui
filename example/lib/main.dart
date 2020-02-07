@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RestuiProvider<ExampleApi>(
-      create: (BuildContext context) => ExampleApi(
+      apiBuilder: (BuildContext context) => ExampleApi(
         uri: Uri.parse("https://picsum.photos"),
         link: HeadersMapperLink(['connection'], debug: true)
           ..chain(DebugLink(printResponseHeaders: true)),
