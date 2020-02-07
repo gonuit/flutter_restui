@@ -6,7 +6,7 @@ typedef ContextCreator<R> = R Function(BuildContext);
 /// down the widget tree.
 ///
 /// It is required for the widget [Query] to work properly
-/// 
+///
 /// API created by [apiBuilder] can be retrieved from children's
 ///  [BuildContext] by calling [Query.of<A extends ApiBase>(context)]
 ///  where [A] is yours API class name
