@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:restui/restui.dart';
 
 import 'example_photo_model.dart';
