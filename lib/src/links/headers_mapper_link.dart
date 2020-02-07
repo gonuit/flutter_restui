@@ -45,7 +45,7 @@ class HeadersMapperLink extends ApiLink {
   Future<ApiResponse> next(ApiRequest request) async {
     request.headers.addAll(_headers);
     ApiResponse response = await super.next(request);
-    setHeaders(response.httpResponse.headers);
+    setHeaders(response.headers);
     return response;
   }
 

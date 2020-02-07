@@ -33,14 +33,14 @@ class DebugLink extends ApiLink {
     final response = await super.next(request);
     if (printResponseBody || printResponseHeaders) {
       print("\n==== RESPONSE ====");
-      if (response?.httpResponse != null) {
+      if (response != null) {
         if (printResponseBody) {
           print("body:");
-          print(response.httpResponse.body);
+          print(response.body);
         }
         if (printResponseHeaders) {
           print("headers:");
-          print(response.httpResponse.headers);
+          print(response.headers);
         }
       } else {
         print("NULL");

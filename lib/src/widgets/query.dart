@@ -42,7 +42,7 @@ class QueryState<R, A> extends State<Query<R, A>> {
   /// Creates caller
   Caller<R> _createAndReplaceCaller() {
     final api = Provider.of<A>(context);
-    return Caller<R>(
+    return _caller = Caller<R>(
       () async => widget._callBuilder(api),
       interval: widget._interval,
     )..addListener(_handleChange);
