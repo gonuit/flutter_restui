@@ -29,7 +29,7 @@ class _PhotoQueries {
       method: HttpMethod.GET,
     );
     return ExamplePhotoModel.fromJson(
-      json.decode(apiResponse.httpResponse.body),
+      json.decode(apiResponse.body),
     );
   }
 }

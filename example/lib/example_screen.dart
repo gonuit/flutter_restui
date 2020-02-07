@@ -34,7 +34,7 @@ class _ExampleScreenState extends State<ExampleScreen> {
                 const SizedBox(height: 15),
                 Query<ExamplePhotoModel, ExampleApi>(
                   key: _queryKey,
-                  callBuilder: (ExampleApi api) {
+                  callBuilder: (BuildContext context, ExampleApi api) {
                     return api.photos.getRandom();
                   },
                   builder: (context, loading, photo) {
@@ -60,7 +60,8 @@ class _ExampleScreenState extends State<ExampleScreen> {
                 const SizedBox(height: 15),
                 Query<ExamplePhotoModel, ExampleApi>(
                   interval: const Duration(seconds: 10),
-                  callBuilder: (ExampleApi api) => api.photos.getRandom(),
+                  callBuilder: (BuildContext context, ExampleApi api) =>
+                      api.photos.getRandom(),
                   builder: (context, loading, photo) {
                     return Container(
                       alignment: Alignment.center,

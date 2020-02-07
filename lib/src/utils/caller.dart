@@ -1,13 +1,14 @@
 part of restui;
 
 /// With this class you are able to make requests every [interval]
-class Caller<T> extends ChangeNotifier {
+class Caller<R> extends ChangeNotifier {
   // final StreamController<T> _controller;
-  final AsyncValueGetter<T> _callback;
+  final AsyncValueGetter<R> _callback;
+  final ValueChanged<R> _onComplete;
   Timer _timer;
   bool loading = false;
-  T _data;
-  T get data => _data;
+  R _data;
+  R get data => _data;
 
   /// Streams with values returned by [callback]
   // Stream<T> get stream => _controller.stream;
@@ -20,8 +21,13 @@ class Caller<T> extends ChangeNotifier {
   ///
   /// When [interval] is not provided.
   /// Caller will has [isActive] equal to `false`
-  Caller(AsyncValueGetter<T> callback, {T initialData, Duration interval})
-      : _callback = callback,
+  Caller(
+    AsyncValueGetter<R> callback, {
+    R initialData,
+    Duration interval,
+    ValueChanged<R> onComplete,
+  })  : _callback = callback,
+        _onComplete = onComplete,
         _data = initialData {
     if (interval != null)
       start(interval);
@@ -48,15 +54,18 @@ class Caller<T> extends ChangeNotifier {
   void _makeIntervalCall(Timer timer) async {
     loading = true;
     notifyListeners();
-    T response = await _callback();
+    R response = await _callback();
     loading = false;
+
+    /// invoke on complete callback
+    _onComplete?.call(response);
     _data = response;
     notifyListeners();
   }
 
   /// Calls [callback] once and returns its value
-  Future<T> call() async {
-    T response = await _callback();
+  Future<R> call() async {
+    R response = await _callback();
     _data = response;
     notifyListeners();
     return response;
