@@ -18,7 +18,6 @@ environment:
 
 dependencies:
   json_annotation: 3.0.1
-  provider: 4.0.3
   restui:
     path: ../
   flutter:

@@ -1,10 +1,18 @@
 # Restui
 
-A simple yet powerful wrapper around `http` and `provider` libraries which
+A simple yet powerful wrapper around `http` library which
 allows you to handle middlewares by `ApiLink`s (strongly inspired by apollo
 graphQL client links) and use `Query` widget to make API calls right from the widgets tree.
 
+## IMPORTANT
+This library is under development, breaking API changes might still happen. If you would like to make use of this library please make sure to provide which version you want to use e.g:
+```yaml
+dependencies:
+  restui: 0.1.0
+```
+
 - [Restui](#restui)
+  - [IMPORTANT](#important)
   - [1. Getting Started](#1-getting-started)
       - [1.1. First create your Api object class by extending `BaseApi` class](#11-first-create-your-api-object-class-by-extending-baseapi-class)
       - [1.2 Provide your Api instance down the widget tree](#12-provide-your-api-instance-down-the-widget-tree)
@@ -62,11 +70,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    /// To provide your api use [RestuiProvider] widget or
-    /// [Provider] from [provider] package
-    /// in place of `<Api>` put your api class name / type
+    /// To provide your api use [RestuiProvider] widget
+    /// in place of [Api] put yours API class type 
     return RestuiProvider<Api>(
-        create: (_) => Api(
+        apiBuilder: (_) => Api(
 
           /// Pass base uri adress thats points to your api
           uri: Uri.parse("https://picsum.photos"),
@@ -101,8 +108,8 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
 
   Future<ExamplePhotoModel> _requestRandomPhoto() async {
     
-    /// Retrive api instance from context
-    final api = Provider.of<Api>(context);
+    /// Retrieve api instance from context
+    final api = Query.of<Api>(context);
 
     /// Make API request
     final photo = await api.getRandomPhoto();
@@ -172,7 +179,7 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
 `ApiLink` object is kind of a middleware that enables you to add some custom
 behaviour before and after every API request.
   
-Links can be then retrived from your API class [MORE](#22-get-data-from-the-link).
+Links can be then Retrieved from your API class [MORE](#22-get-data-from-the-link).
 
 ### 2.2 Built-in ApiLinks
 
@@ -230,7 +237,7 @@ class OngoingRequestsCounterLink extends ApiLink {
 Sometimes there is a need to retrieve data saved inside a link or pass some data into it. This is possible thanks to the:
 ```dart
 /// Retrieve `Api` instance from the tree
-Api api = Provider.of<Api>(context);
+Api api = Query.of<Api>(context);
 
 /// Get first link of provided type
 OngoingRequestsCounterLink link = Api.getFirstLinkOfType<OngoingRequestsCounterLink>();
@@ -240,5 +247,8 @@ print(link.ongoingRequests);
 ```
 `Api` should be replaced with your API class name that extends `ApiBase`.
 
+
 ## 3. TODO:
-  - Remove `provider` from dependency
+  - Tests
+  - Improve readme
+  - Add `CacheLink` which will be responsible for request caching
