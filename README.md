@@ -4,6 +4,14 @@ A simple yet powerful wrapper around `http` and `provider` libraries which
 allows you to handle middlewares by `ApiLink`s (strongly inspired by apollo
 graphQL client links) and use `Query` widget to make API calls right from the widgets tree.
 
+- [Restui](#restui)
+  - [Getting Started](#getting-started)
+      - [1. First create your Api object class by extending `BaseApi` class](#1-first-create-your-api-object-class-by-extending-baseapi-class)
+      - [2 Provide your Api instance down the widget tree](#2-provide-your-api-instance-down-the-widget-tree)
+      - [3.1 To make an api call in standard way](#31-to-make-an-api-call-in-standard-way)
+      - [3.2 Or simply make use of `Query` widget to make the call from widget tree](#32-or-simply-make-use-of-query-widget-to-make-the-call-from-widget-tree)
+  - [2. TODO:](#2-todo)
+
 ## Getting Started
 
 #### 1. First create your Api object class by extending `BaseApi` class
@@ -141,3 +149,8 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
   }
 }
 ```
+
+
+## 2. TODO:
+  - Add tests
+  - Remove `provider` from dependency
