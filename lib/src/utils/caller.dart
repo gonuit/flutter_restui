@@ -5,6 +5,8 @@ class Caller<R> extends ChangeNotifier {
   // final StreamController<T> _controller;
   final AsyncValueGetter<R> _callback;
   final ValueChanged<R> _onComplete;
+
+  final bool _instantCall;
   Timer _timer;
   bool loading = false;
   R _data;
@@ -26,13 +28,14 @@ class Caller<R> extends ChangeNotifier {
     R initialData,
     Duration interval,
     ValueChanged<R> onComplete,
+    bool instantCall,
   })  : _callback = callback,
         _onComplete = onComplete,
+        _instantCall = instantCall,
         _data = initialData {
     if (interval != null)
       start(interval);
-    else
-      call();
+    else if (_instantCall) call();
   }
 
   /// Stops periodic [callback] calls
@@ -44,8 +47,9 @@ class Caller<R> extends ChangeNotifier {
   void start(Duration interval) {
     if (_timer?.isActive == true) return;
 
-    /// call [callback] for the first time
-    call();
+    /// call [callback] for the first time if
+    /// [instantCall] is set to true.
+    if (_instantCall) call();
 
     /// keep calling [callback] with [interval] duration
     _timer = Timer.periodic(interval, _makeIntervalCall);
