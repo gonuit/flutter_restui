@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'package:example/example_screen.dart';
 import 'package:example/example_api.dart';
@@ -13,8 +12,7 @@ class MyApp extends StatelessWidget {
     return RestUiProvider<ExampleApi>(
       create: (BuildContext context) => ExampleApi(
         uri: Uri.parse("https://picsum.photos"),
-        link: HeadersMapperLink([], debug: true)
-          ..chain(DebugLink()),
+        link: HeadersMapperLink([])..chain(DebugLink()),
       ),
       child: MaterialApp(
         title: 'Flutter RestUI example app',

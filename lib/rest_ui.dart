@@ -26,4 +26,5 @@ part './src/utils/link.dart';
 
 /// Links
 part './src/links/headers_mapper_link.dart';
+part './src/links/cache_link.dart';
 part './src/links/debug_link.dart';
