@@ -5,16 +5,23 @@ allows you to handle middlewares by `ApiLink`s (strongly inspired by apollo
 graphQL client links) and use `Query` widget to make API calls right from the widgets tree.
 
 - [Restui](#restui)
-  - [Getting Started](#getting-started)
-      - [1. First create your Api object class by extending `BaseApi` class](#1-first-create-your-api-object-class-by-extending-baseapi-class)
-      - [2 Provide your Api instance down the widget tree](#2-provide-your-api-instance-down-the-widget-tree)
-      - [3.1 To make an api call in standard way](#31-to-make-an-api-call-in-standard-way)
-      - [3.2 Or simply make use of `Query` widget to make the call from widget tree](#32-or-simply-make-use-of-query-widget-to-make-the-call-from-widget-tree)
-  - [2. TODO:](#2-todo)
+  - [1. Getting Started](#1-getting-started)
+      - [1.1. First create your Api object class by extending `BaseApi` class](#11-first-create-your-api-object-class-by-extending-baseapi-class)
+      - [1.2 Provide your Api instance down the widget tree](#12-provide-your-api-instance-down-the-widget-tree)
+      - [1.3.1 To make an api call in standard way](#131-to-make-an-api-call-in-standard-way)
+      - [1.3.2 Or simply make use of `Query` widget to make the call from widget tree](#132-or-simply-make-use-of-query-widget-to-make-the-call-from-widget-tree)
+  - [2. ApiLinks](#2-apilinks)
+    - [2.1 What is ApiLink](#21-what-is-apilink)
+    - [2.2 Built-in ApiLinks](#22-built-in-apilinks)
+      - [2.2.1 HeadersMapperLink](#221-headersmapperlink)
+    - [2.3 Create own ApiLink](#23-create-own-apilink)
+      - [2.3.1 Create link](#231-create-link)
+      - [2.3.3 Get data from the link](#233-get-data-from-the-link)
+  - [3. TODO:](#3-todo)
 
-## Getting Started
+## 1. Getting Started
 
-#### 1. First create your Api object class by extending `BaseApi` class
+#### 1.1. First create your Api object class by extending `BaseApi` class
 ```dart
 class Api extends ApiBase {
 
@@ -49,7 +56,7 @@ class Api extends ApiBase {
 
 ```
 
-#### 2 Provide your Api instance down the widget tree
+#### 1.2 Provide your Api instance down the widget tree
 ```dart
 class MyApp extends StatelessWidget {
   @override
@@ -76,7 +83,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-#### 3.1 To make an api call in standard way
+#### 1.3.1 To make an api call in standard way
 ```dart
 class _ApiExampleScreenState extends State<ApiExampleScreen> {
   ExamplePhotoModel _randomPhoto;
@@ -104,7 +111,7 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
   }
 }
 ```
-#### 3.2 Or simply make use of `Query` widget to make the call from widget tree
+#### 1.3.2 Or simply make use of `Query` widget to make the call from widget tree
 ```dart
 class _ApiExampleScreenState extends State<ApiExampleScreen> {
  
@@ -150,7 +157,80 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
 }
 ```
 
+## 2. ApiLinks
 
-## 2. TODO:
+### 2.1 What is ApiLink
+`ApiLink` object is kind of a middleware that enables you to add some custom
+behaviour before and after every API request.
+  
+Links can be then retrived from your API class [MORE](#22-get-data-from-the-link).
+
+### 2.2 Built-in ApiLinks
+
+#### 2.2.1 HeadersMapperLink
+This [ApiLink] takes headers specified by [headersToMap] argument
+from response headers and then put to the next request headers.
+  
+It can be used for authorization. For example,we have an `authorization`
+header that changes after each request and with the next query we
+must send it back in headers. This [ApiLink] will take it from the
+response, save and set as a next request header.
+  
+Example use simple as:
+```dart
+final api = Api(
+  uri: Uri.parse("https://picsum.photos"),
+  link: HeadersMapperLink(["authorization"]),
+);
+```
+
+
+### 2.3 Create own ApiLink
+If you want to create your own ApiLink with custom behaviour all you need to do is to create your link class that extend `ApiLink` class and then pass it to your api super constructor (constructor of `ApiBase` class) (e.g. [[1](#1-first-create-your-api-object-class-by-extending-baseapi-class)] [[2](#2-provide-your-api-instance-down-the-widget-tree)]).
+
+#### 2.3.1 Create link
+```dart
+class OngoingRequestsCounterLink extends ApiLink {
+  int ongoingRequests;
+
+  OngoingRequestsCounterLink() : _requests = 0;
+
+  /// All you need to do is to override [next] method and add your
+  /// custom behaviour
+  @override
+  Future<ApiResponse> next(ApiRequest request) async {
+    
+    /// Code here will be called `BEFORE` request
+    ongoingRequests++;
+
+    /// Calling [super.next] is required. It calls next [ApiLink]s in the 
+    /// chain and returns with [ApiResponse]. 
+    ApiResponse response = await super.next(request);
+
+    /// Code here will be called `AFTER` request
+    ongoingRequests--;
+
+    /// [next] method should return [ApiResponse] as it passes it down the
+    /// [ApiLink] chain
+    return response;
+  }
+}
+```
+
+#### 2.3.3 Get data from the link 
+Sometimes there is a need to retrieve data saved inside a link or pass some data into it. This is possible thanks to the:
+```dart
+/// Retrieve `Api` instance from the tree
+Api api = Provider.of<Api>(context);
+
+/// Get first link of provided type
+OngoingRequestsCounterLink link = Api.getFirstLinkOfType<OngoingRequestsCounterLink>();
+
+/// Do sth with your link data
+print(link.ongoingRequests);
+```
+`Api` should be replaced with your API class name that extends `ApiBase`.
+
+## 3. TODO:
   - Add tests
   - Remove `provider` from dependency
