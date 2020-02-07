@@ -10,12 +10,20 @@ typedef QueryCallBuilder<R, A> = Future<R> Function(
 
 typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
 
+/// Widget responsible for refreshing part of the tree with updated data
+/// 
+/// If you want to have full controll when [callBuilder] will be called.
+/// Provide this widget with a key argument of type `GlobalKey<QueryState<R,A>>`.
+/// Then you can trigger the query lifecycle by `call` method invocation on
+/// [QueryState] object. It could be useful e.g. when you want to upload
+/// a file and you want to do this only once right after its selection.
 class Query<R, A extends ApiBase> extends StatefulWidget {
   final QueryBuilder<R> _builder;
   final Duration _interval;
   final QueryCallBuilder<R, A> _callBuilder;
   final QueryOnComplete<R> _onComplete;
   final R _initialData;
+  final bool _instantCall;
 
   /// Handle api calls inside widget structure
   Query({
@@ -25,11 +33,16 @@ class Query<R, A extends ApiBase> extends StatefulWidget {
     QueryOnComplete<R> onComplete,
     R initialData,
     Duration interval,
+
+    /// Whether [callBuilder] will be called right before first
+    /// [builder] invocation defaults to `true`
+    bool instantCall,
   })  : _builder = builder,
         _callBuilder = callBuilder,
         _interval = interval,
         _initialData = initialData,
         _onComplete = onComplete,
+        _instantCall = instantCall ?? true,
         super(key: key);
 
   @override
@@ -54,6 +67,7 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
       () async => widget._callBuilder(context, api),
       interval: widget._interval,
       initialData: widget._initialData,
+      instantCall: widget._instantCall,
 
       /// Adds context to onComplete method
       onComplete: (R value) => widget._onComplete(context, value),
@@ -63,9 +77,25 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
   /// rebuild widget when caller data changed
   void _handleChange() => setState(() {});
 
-  /// Call [callBuilder] query
+  /// Call [callBuilder] query and whole.
+  ///
+  /// When combined with [instantCall] set to `false` it's the only
+  /// way of calling api by starting triggering query lifecycle.
   void call() {
     _caller?.call();
+  }
+
+  /// Replace old caller responsible for handling requests and widget updates
+  /// with new one.
+  ///
+  /// It's useful when you want to change [onComplete] callback or
+  /// even a [builder] method whose changes are not tracked by [Query] widget.
+  ///
+  /// [Query] widget only tracks changes of [interval] other changes
+  /// will take no effect
+  void updateCaller() {
+    _disposeCaller();
+    _createAndReplaceCaller();
   }
 
   @override
