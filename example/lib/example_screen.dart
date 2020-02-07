@@ -34,9 +34,16 @@ class _ExampleScreenState extends State<ExampleScreen> {
                 const SizedBox(height: 15),
                 Query<ExamplePhotoModel, ExampleApi>(
                   key: _queryKey,
-                  callBuilder: (ExampleApi api) {
-                    return api.photos.getRandom();
-                  },
+                  initialData: const ExamplePhotoModel(
+                    author: "Oleg Chursin",
+                    id: "43",
+                    width: 1280,
+                    height: 831,
+                    url: "https://unsplash.com/photos/IoCWq07GaG4",
+                    downloadUrl: "https://picsum.photos/id/43/200/200",
+                  ),
+                  callBuilder: (BuildContext context, ExampleApi api) =>
+                      api.photos.getRandom(),
                   builder: (context, loading, photo) {
                     return Container(
                       alignment: Alignment.center,
@@ -60,7 +67,8 @@ class _ExampleScreenState extends State<ExampleScreen> {
                 const SizedBox(height: 15),
                 Query<ExamplePhotoModel, ExampleApi>(
                   interval: const Duration(seconds: 10),
-                  callBuilder: (ExampleApi api) => api.photos.getRandom(),
+                  callBuilder: (BuildContext context, ExampleApi api) =>
+                      api.photos.getRandom(),
                   builder: (context, loading, photo) {
                     return Container(
                       alignment: Alignment.center,

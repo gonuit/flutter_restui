@@ -21,7 +21,7 @@ class ExamplePhotoModel {
     return newUri.toString();
   }
 
-  ExamplePhotoModel({
+  const ExamplePhotoModel({
     this.id,
     this.author,
     this.width,

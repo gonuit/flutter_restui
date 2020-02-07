@@ -5,30 +5,38 @@ typedef QueryBuilder<T> = Widget Function(
   bool loading,
   T response,
 );
-typedef QueryCallBuilder<R, A> = Future<R> Function(A);
+typedef QueryCallBuilder<R, A> = Future<R> Function(
+    BuildContext context, A api);
 
-class Query<R, A> extends StatefulWidget {
+typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
+
+class Query<R, A extends ApiBase> extends StatefulWidget {
   final QueryBuilder<R> _builder;
   final Duration _interval;
   final QueryCallBuilder<R, A> _callBuilder;
+  final QueryOnComplete<R> _onComplete;
+  final R _initialData;
 
   /// Handle api calls inside widget structure
   Query({
     Key key,
     @required QueryBuilder<R> builder,
     @required QueryCallBuilder<R, A> callBuilder,
-    ValueChanged<R> onComplete,
+    QueryOnComplete<R> onComplete,
+    R initialData,
     Duration interval,
   })  : _builder = builder,
         _callBuilder = callBuilder,
         _interval = interval,
+        _initialData = initialData,
+        _onComplete = onComplete,
         super(key: key);
 
   @override
   QueryState createState() => QueryState<R, A>();
 }
 
-class QueryState<R, A> extends State<Query<R, A>> {
+class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
   Caller<R> _caller;
 
   @override
@@ -43,8 +51,12 @@ class QueryState<R, A> extends State<Query<R, A>> {
   Caller<R> _createAndReplaceCaller() {
     final api = Provider.of<A>(context);
     return _caller = Caller<R>(
-      () async => widget._callBuilder(api),
+      () async => widget._callBuilder(context, api),
       interval: widget._interval,
+      initialData: widget._initialData,
+
+      /// Adds context to onComplete method
+      onComplete: (R value) => widget._onComplete(context, value),
     )..addListener(_handleChange);
   }
 
