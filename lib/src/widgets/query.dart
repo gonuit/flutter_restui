@@ -5,12 +5,14 @@ typedef QueryWidgetBuilder<T> = Widget Function(
   bool loading,
   T response,
 );
-typedef QueryCallBuilder<R, A, V> = Future<R> Function(
+typedef QueryCallBuilder<R, A extends ApiBase, V> = Future<R> Function(
     BuildContext context, A api, V variable);
 
-typedef QueryInitialDataBuilder<R, A> = R Function(BuildContext context, A api);
+typedef QueryInitialDataBuilder<R, A extends ApiBase> = R Function(
+    BuildContext context, A api);
 
-typedef UpdaterBuilder<A> = Listenable Function(BuildContext context, A api);
+typedef UpdaterBuilder<A extends ApiBase> = Listenable Function(
+    BuildContext context, A api);
 
 typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
 
@@ -174,17 +176,12 @@ class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
     return callFuture;
   }
 
-  /// Replace old caller responsible for handling requests and widget updates
-  /// with new one.
-  ///
-  /// It's useful when you want to change [onComplete] callback or
-  /// even a [builder] method whose changes are not tracked by [Query] widget.
-  ///
-  /// [Query] widget only tracks changes of [interval] other changes
-  /// will take no effect
-  void updateCaller() {
-    _disposeCaller();
-    _createAndReplaceCaller();
+  /// Unsubscribe from old updater, build new from [buildUpdater] function
+  /// and subscribe to it.
+  void rebuildUpdater() {
+    /// Updater
+    _unsubscribeFromUpdater();
+    _unsubscribeFromUpdater();
   }
 
   @override
