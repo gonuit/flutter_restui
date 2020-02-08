@@ -1,5 +1,5 @@
 import 'package:example/screens/home_screen.dart';
-import 'package:example/screens/state_management/bloc_link.dart';
+import 'package:example/screens/state_management/photo_store.dart';
 import 'package:flutter/material.dart';
 
 import 'package:restui/restui.dart';
@@ -13,9 +13,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return RestuiProvider<ExampleApi>(
       apiBuilder: (BuildContext context) => ExampleApi(
+        stores: <ApiStore>[
+          PhotoStore(),
+        ],
         uri: Uri.parse("https://picsum.photos"),
-        link: BlocLink()
-          ..chain(HeadersMapperLink(['connection'], debug: true))
+        link: HeadersMapperLink(['connection'], debug: true)
           ..chain(DebugLink(printResponseBody: true)),
       ),
       child: MaterialApp(

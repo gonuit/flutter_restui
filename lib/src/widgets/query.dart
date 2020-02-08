@@ -1,21 +1,5 @@
 part of restui;
 
-typedef QueryWidgetBuilder<T> = Widget Function(
-  BuildContext context,
-  bool loading,
-  T response,
-);
-typedef QueryCallBuilder<R, A extends ApiBase, V> = Future<R> Function(
-    BuildContext context, A api, V variable);
-
-typedef QueryInitialDataBuilder<R, A extends ApiBase> = R Function(
-    BuildContext context, A api);
-
-typedef UpdaterBuilder<A extends ApiBase> = Listenable Function(
-    BuildContext context, A api);
-
-typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
-
 /// Widget responsible for refreshing part of the tree with updated data
 ///
 /// If you want to have full controll when [callBuilder] will be called.
@@ -28,6 +12,8 @@ class Query<A extends ApiBase, R, V> extends StatefulWidget {
   final Duration _interval;
   final QueryCallBuilder<R, A, V> _callBuilder;
   final UpdaterBuilder<A> _updaterBuilder;
+  final QueryShouldUpdate<A, R> _shouldUpdate;
+
   final ValueChanged<Exception> _onError;
   final QueryOnComplete<R> _onComplete;
   final QueryInitialDataBuilder<R, A> _initialDataBuilder;
@@ -41,6 +27,7 @@ class Query<A extends ApiBase, R, V> extends StatefulWidget {
     @required QueryCallBuilder<R, A, V> callBuilder,
     @required QueryWidgetBuilder<R> builder,
     UpdaterBuilder<A> updaterBuilder,
+    QueryShouldUpdate<A, R> shouldUpdate,
     ValueChanged<Exception> onError,
     QueryOnComplete<R> onComplete,
     Duration interval,
@@ -57,6 +44,7 @@ class Query<A extends ApiBase, R, V> extends StatefulWidget {
         _onError = onError,
         _onComplete = onComplete,
         _variable = variable,
+        _shouldUpdate = shouldUpdate,
         _instantCall = instantCall ?? true,
         super(key: key);
 
@@ -73,11 +61,6 @@ class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
   Caller<R> _caller;
   Listenable _updater;
   V _variable;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {
@@ -155,7 +138,14 @@ class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
   }
 
   /// rebuild widget when caller data changed
-  void _handleChange() => setState(() {});
+  void _handleChange() {
+    final api = Query.of<A>(context);
+
+    /// Do not update widget when [shouldUpdate] return false
+    if (widget._shouldUpdate?.call(context, api, _caller.data) != false) {
+      setState(() {});
+    }
+  }
 
   /// Call [callBuilder] query and whole.
   ///

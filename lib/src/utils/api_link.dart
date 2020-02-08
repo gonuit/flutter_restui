@@ -1,5 +1,8 @@
 part of restui;
 
+/// ApiLink that is mixed witch ChangeNotifier
+abstract class NotifierApiLink extends ApiLink with ChangeNotifier {}
+
 /// An abstract class that lets you create your own link
 ///
 /// Each link should extend this method

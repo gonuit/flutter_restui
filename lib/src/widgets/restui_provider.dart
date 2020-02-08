@@ -1,7 +1,5 @@
 part of restui;
 
-typedef ContextCreator<R> = R Function(BuildContext);
-
 /// Provides API that extends [ApiBase] created by [apiBuilder]
 /// down the widget tree.
 ///

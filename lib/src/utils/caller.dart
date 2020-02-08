@@ -1,6 +1,6 @@
 part of restui;
 
-/// Class that manages [callback] function invokation.
+/// Class that manages [callback] function invocation.
 class Caller<R> extends ChangeNotifier {
   final AsyncValueGetter<R> _callback;
   final ValueChanged<R> _onComplete;
@@ -95,7 +95,10 @@ class Caller<R> extends ChangeNotifier {
     _timer = Timer.periodic(interval, _makeIntervalCall);
   }
 
-  void _makeIntervalCall(Timer timer) async {
+  void _makeIntervalCall(Timer timer) => call();
+
+  /// Calls [callback] once and returns its value
+  Future<R> call() async {
     /// Prevents multiple calls from one caller
     _ongoingRequestsCount++;
     notifyListeners();
@@ -104,14 +107,18 @@ class Caller<R> extends ChangeNotifier {
     try {
       response = await _callback();
     } on Exception catch (err) {
+      _ongoingRequestsCount--;
+
+      /// notify listeners
+      notifyListeners();
+
       /// invoke on error callback
       _onError?.call(err);
 
       /// Prevent [onComplete] callback invocation
-      return;
-    } finally {
-      _ongoingRequestsCount--;
+      return null;
     }
+    _ongoingRequestsCount--;
 
     /// invoke on complete callback
     _onComplete?.call(response);
@@ -119,15 +126,9 @@ class Caller<R> extends ChangeNotifier {
     /// Assign new data
     _data = response;
 
-    /// Update listeners
+    /// notify listeners
     notifyListeners();
-  }
 
-  /// Calls [callback] once and returns its value
-  Future<R> call() async {
-    R response = await _callback();
-    _data = response;
-    notifyListeners();
     return response;
   }
 

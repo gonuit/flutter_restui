@@ -7,11 +7,13 @@ part of restui;
 /// add your own methods / requests
 ///
 /// Use call method to hand
-@mustCallSuper
 abstract class ApiBase extends ApiLink {
+  final ApiStorage _storage;
   final Uri _uri;
   final Map<String, String> _defaultHeaders;
   final ApiLink _link;
+
+  ApiStorage get storage => _storage;
 
   /// Client is needed for persistent connection
   final http.Client _client;
@@ -37,10 +39,12 @@ abstract class ApiBase extends ApiLink {
     @required Uri uri,
     ApiLink link,
     Map<String, String> defaultHeaders,
+    List<ApiStore> stores,
   })  : assert(uri != null, "Api widget should be provided with uri argument"),
         _uri = uri,
         _defaultHeaders = defaultHeaders ?? const <String, String>{},
         _link = link,
+        _storage = ApiStorage(stores),
         _client = http.Client() {
     /// If link is provided close link chain
     _link?._closeChainWith(this);

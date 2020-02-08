@@ -1,6 +1,5 @@
 part of restui;
 
-@experimental
 class DebugLink extends ApiLink {
   bool printResponseBody;
   bool printResponseHeaders;

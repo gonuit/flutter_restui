@@ -14,6 +14,9 @@ import 'package:http/http.dart' as http;
 /// ApiBase
 part './src/api_base.dart';
 
+/// ApiStorage
+part './src/storage/api_storage.dart';
+
 /// widgets
 part './src/widgets/query.dart';
 part './src/widgets/restui_provider.dart';
@@ -22,6 +25,7 @@ part './src/widgets/restui_provider.dart';
 part './src/utils/caller.dart';
 part './src/utils/exceptions.dart';
 part './src/utils/api_link.dart';
+part './src/utils/typedefs.dart';
 
 /// Links
 part './src/links/headers_mapper_link.dart';
@@ -31,3 +35,8 @@ part './src/links/debug_link.dart';
 part './src/data/data.dart';
 part './src/data/api_request.dart';
 part './src/data/api_response.dart';
+
+/// Experimental widgets
+part './src/widgets/updaters/updater.dart';
+part './src/widgets/updaters/api_link_updater.dart';
+part './src/widgets/updaters/api_store_updater.dart';

@@ -1,8 +1,7 @@
 import 'package:example/example_photo_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:restui/restui.dart';
 
-class BlocLink extends ApiLink with ChangeNotifier {
+class PhotoStore extends NotifierApiStore {
   final List<ExamplePhotoModel> _photos = [];
   List<ExamplePhotoModel> get photos => List.unmodifiable(_photos);
 
