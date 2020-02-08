@@ -1,8 +1,7 @@
+import 'package:example/example_api.dart';
+import 'package:example/example_photo_model.dart';
 import 'package:flutter/material.dart';
 import 'package:restui/restui.dart';
-
-import 'example_photo_model.dart';
-import 'example_api.dart';
 
 class ExampleScreen extends StatefulWidget {
   @override
@@ -10,7 +9,7 @@ class ExampleScreen extends StatefulWidget {
 }
 
 class _ExampleScreenState extends State<ExampleScreen> {
-  final GlobalKey<QueryState<ExamplePhotoModel, ExampleApi>> _queryKey =
+  final GlobalKey<QueryState<ExampleApi, ExamplePhotoModel, void>> _queryKey =
       GlobalKey();
 
   final initialPhoto = const ExamplePhotoModel(
@@ -41,17 +40,21 @@ class _ExampleScreenState extends State<ExampleScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 15),
-                Query<ExamplePhotoModel, ExampleApi>(
+                Query<ExampleApi, ExamplePhotoModel, void>(
                   /// Assign [GlobalKey<QueryState<ExamplePhotoModel, ExampleApi>>] to get access to [call] method.
                   /// Then you can e.g. assign this method to button and invoke call every button tap
                   ///
                   /// It is important to set [instantCall] to false if you do not want to call api right before first
                   /// widget [build].
                   key: _queryKey,
-                  initialData: initialPhoto,
+                  initialDataBuilder: (BuildContext context, ExampleApi api) =>
+                      initialPhoto,
                   instantCall: false,
-                  callBuilder: (BuildContext context, ExampleApi api) =>
+                  callBuilder: (BuildContext context, ExampleApi api, _) =>
                       api.photos.getRandom(),
+                  onError: (Exception err) {
+                    print(err);
+                  },
                   builder: (context, loading, photo) {
                     return Container(
                       alignment: Alignment.center,
@@ -73,11 +76,11 @@ class _ExampleScreenState extends State<ExampleScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 15),
-                Query<ExamplePhotoModel, ExampleApi>(
+                Query<ExampleApi, ExamplePhotoModel, void>(
                   /// Because [interval] is provided, [Query] will invoke
                   /// [callBuilder] every duration of [interval].
                   interval: const Duration(seconds: 10),
-                  callBuilder: (BuildContext context, ExampleApi api) =>
+                  callBuilder: (BuildContext context, ExampleApi api, _) =>
                       api.photos.getRandom(),
                   builder: (context, loading, photo) {
                     return Container(

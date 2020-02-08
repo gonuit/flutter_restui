@@ -32,4 +32,14 @@ class _PhotoQueries {
       json.decode(apiResponse.body),
     );
   }
+
+  Future<ExamplePhotoModel> getById(String id) async {
+    final apiResponse = await api.call(
+      endpoint: "/id/$id/info",
+      method: HttpMethod.GET,
+    );
+    return ExamplePhotoModel.fromJson(
+      json.decode(apiResponse.body),
+    );
+  }
 }
