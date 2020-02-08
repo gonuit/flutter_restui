@@ -34,7 +34,7 @@ class Query<A extends ApiBase, R, V> extends StatefulWidget {
 
   /// Handle api calls inside widget structure
   Query({
-    Key key,
+    GlobalKey<QueryState<A, R, V>> key,
     QueryInitialDataBuilder<R, A> initialDataBuilder,
     @required QueryCallBuilder<R, A, V> callBuilder,
     @required QueryWidgetBuilder<R> builder,
@@ -114,8 +114,6 @@ class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
 
     /// Create updater from [updateBuilder] method if provided
     _updater = widget._updaterBuilder?.call(context, api);
-
-    _listenToUpdater();
   }
 
   /// Listen to [_updater] and rebuild widget every time when [_updater] notifies its' listeners
@@ -144,7 +142,7 @@ class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
       /// its' value over time.
       () async => widget._callBuilder(context, api, _variable),
       interval: widget._interval,
-      initialData: widget._initialDataBuilder(context, api),
+      initialData: widget._initialDataBuilder?.call(context, api),
       instantCall: widget._instantCall,
       onError: widget._onError,
 
