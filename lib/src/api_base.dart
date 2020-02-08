@@ -47,8 +47,8 @@ abstract class ApiBase extends ApiLink {
   }
 
   /// Get first link of provided type
-  ApiLink getFirstLinkOfType<T>() =>
-      _link?._firstWhere((ApiLink link) => link is T);
+  T getFirstLinkOfType<T>() =>
+      _link?._firstWhere((ApiLink link) => link is T) as T;
 
   /// Call rest API by triggering the query lifecycle.
   /// Constructs [ApiRequest] object and invoke [ApiLink]s chain,

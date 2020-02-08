@@ -1,12 +1,16 @@
 part of restui;
 
-typedef QueryBuilder<T> = Widget Function(
+typedef QueryWidgetBuilder<T> = Widget Function(
   BuildContext context,
   bool loading,
   T response,
 );
 typedef QueryCallBuilder<R, A> = Future<R> Function(
     BuildContext context, A api);
+
+typedef QueryInitialDataBuilder<R, A> = R Function(BuildContext context, A api);
+
+typedef UpdaterBuilder<A> = Listenable Function(BuildContext context, A api);
 
 typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
 
@@ -18,20 +22,24 @@ typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
 /// [QueryState] object. It could be useful e.g. when you want to upload
 /// a file and you want to do this only once right after its selection.
 class Query<R, A extends ApiBase> extends StatefulWidget {
-  final QueryBuilder<R> _builder;
+  final QueryWidgetBuilder<R> _builder;
   final Duration _interval;
   final QueryCallBuilder<R, A> _callBuilder;
+  final UpdaterBuilder<A> _updaterBuilder;
+  final ValueChanged<Exception> _onError;
   final QueryOnComplete<R> _onComplete;
-  final R _initialData;
+  final QueryInitialDataBuilder<R, A> _initialDataBuilder;
   final bool _instantCall;
 
   /// Handle api calls inside widget structure
   Query({
     Key key,
-    @required QueryBuilder<R> builder,
+    QueryInitialDataBuilder<R, A> initialDataBuilder,
     @required QueryCallBuilder<R, A> callBuilder,
+    @required QueryWidgetBuilder<R> builder,
+    UpdaterBuilder<A> updaterBuilder,
+    ValueChanged<Exception> onError,
     QueryOnComplete<R> onComplete,
-    R initialData,
     Duration interval,
 
     /// Whether [callBuilder] will be called right before first
@@ -40,7 +48,9 @@ class Query<R, A extends ApiBase> extends StatefulWidget {
   })  : _builder = builder,
         _callBuilder = callBuilder,
         _interval = interval,
-        _initialData = initialData,
+        _initialDataBuilder = initialDataBuilder,
+        _updaterBuilder = updaterBuilder,
+        _onError = onError,
         _onComplete = onComplete,
         _instantCall = instantCall ?? true,
         super(key: key);
@@ -56,40 +66,69 @@ class Query<R, A extends ApiBase> extends StatefulWidget {
 
 class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
   Caller<R> _caller;
+  Listenable _updater;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
+    /// Called only once
     if (_caller == null) {
+      _buildAndListenToUpdater();
       _createAndReplaceCaller();
     }
     super.didChangeDependencies();
   }
 
-  /// Return closure with [BuildContext] that calls original [onComplete]
-  /// method if it is available otherwise returns null.
-  ValueChanged<R> _getOnCompleteCallback(BuildContext context) =>
-      widget._onComplete != null
-          ? (R value) => widget._onComplete(context, value)
-          : null;
+  void _buildAndListenToUpdater() {
+    _buildUpdater();
+    _listenToUpdater();
+  }
+
+  void _buildUpdater() {
+    /// Retrieve API created and provided by [RestuiProvider]
+    final api = Query.of<A>(context);
+
+    /// Create updater from [updateBuilder] method if provided
+    _updater = widget._updaterBuilder?.call(context, api);
+
+    _listenToUpdater();
+  }
+
+  /// Listen to [_updater] and rebuild widget every time when [_updater] notifies its' listeners
+  void _listenToUpdater() {
+    _updater?.addListener(_handleChange);
+  }
+
+  void _onComplete(R value) {
+    widget._onComplete?.call(context, value);
+  }
 
   /// Creates caller
   Caller<R> _createAndReplaceCaller() {
     /// Retrieve API created and provided by [RestuiProvider]
     final api = Query.of<A>(context);
 
-    if (api == null)
+    if (api == null) {
       throw ApiException(
         "Api cannot be null.\n"
         "Did you forget to wrap widgets tree with RestuiProvider?",
       );
+    }
+
     return _caller = Caller<R>(
       () async => widget._callBuilder(context, api),
       interval: widget._interval,
-      initialData: widget._initialData,
+      initialData: widget._initialDataBuilder(context, api),
       instantCall: widget._instantCall,
+      onError: widget._onError,
 
-      /// Adds context to onComplete method
-      onComplete: _getOnCompleteCallback(context),
+      /// [_onComplete] method will provide [BuildContext] to [onComplete]
+      /// callback for consistency.
+      onComplete: _onComplete,
     )..addListener(_handleChange);
   }
 
@@ -134,12 +173,18 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
     return widget._builder(context, _caller.loading, _caller.data);
   }
 
+  void _unsubscribeFromUpdater() {
+    _updater?.removeListener(_handleChange);
+  }
+
   void _disposeCaller() {
+    _caller?.removeListener(_handleChange);
     _caller?.dispose();
   }
 
   @override
   void dispose() {
+    _unsubscribeFromUpdater();
     _disposeCaller();
     super.dispose();
   }
