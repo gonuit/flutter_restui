@@ -5,8 +5,8 @@ typedef QueryWidgetBuilder<T> = Widget Function(
   bool loading,
   T response,
 );
-typedef QueryCallBuilder<R, A> = Future<R> Function(
-    BuildContext context, A api);
+typedef QueryCallBuilder<R, A, V> = Future<R> Function(
+    BuildContext context, A api, V variable);
 
 typedef QueryInitialDataBuilder<R, A> = R Function(BuildContext context, A api);
 
@@ -21,26 +21,28 @@ typedef QueryOnComplete<V> = void Function(BuildContext context, V value);
 /// Then you can trigger the query lifecycle by `call` method invocation on
 /// [QueryState] object. It could be useful e.g. when you want to upload
 /// a file and you want to do this only once right after its selection.
-class Query<R, A extends ApiBase> extends StatefulWidget {
+class Query<A extends ApiBase, R, V> extends StatefulWidget {
   final QueryWidgetBuilder<R> _builder;
   final Duration _interval;
-  final QueryCallBuilder<R, A> _callBuilder;
+  final QueryCallBuilder<R, A, V> _callBuilder;
   final UpdaterBuilder<A> _updaterBuilder;
   final ValueChanged<Exception> _onError;
   final QueryOnComplete<R> _onComplete;
   final QueryInitialDataBuilder<R, A> _initialDataBuilder;
   final bool _instantCall;
+  final V _variable;
 
   /// Handle api calls inside widget structure
   Query({
     Key key,
     QueryInitialDataBuilder<R, A> initialDataBuilder,
-    @required QueryCallBuilder<R, A> callBuilder,
+    @required QueryCallBuilder<R, A, V> callBuilder,
     @required QueryWidgetBuilder<R> builder,
     UpdaterBuilder<A> updaterBuilder,
     ValueChanged<Exception> onError,
     QueryOnComplete<R> onComplete,
     Duration interval,
+    V variable,
 
     /// Whether [callBuilder] will be called right before first
     /// [builder] invocation defaults to `true`
@@ -52,11 +54,12 @@ class Query<R, A extends ApiBase> extends StatefulWidget {
         _updaterBuilder = updaterBuilder,
         _onError = onError,
         _onComplete = onComplete,
+        _variable = variable,
         _instantCall = instantCall ?? true,
         super(key: key);
 
   @override
-  QueryState createState() => QueryState<R, A>();
+  QueryState createState() => QueryState<A, R, V>();
 
   /// Retrieve API created and provided by [RestuiProvider]
   static A of<A extends ApiBase>(BuildContext context) {
@@ -64,9 +67,10 @@ class Query<R, A extends ApiBase> extends StatefulWidget {
   }
 }
 
-class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
+class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
   Caller<R> _caller;
   Listenable _updater;
+  V _variable;
 
   @override
   void initState() {
@@ -81,6 +85,22 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
       _createAndReplaceCaller();
     }
     super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(Query<A, R, V> oldWidget) {
+    if (widget._variable != oldWidget._variable) {
+      /// Save variable from widget to state. (setState/rebuild is not needed)
+      _variable = widget._variable;
+    }
+    if (widget._interval != oldWidget._interval) {
+      /// dispose current caller
+      _disposeCaller();
+
+      /// replace old caller with new one
+      _createAndReplaceCaller();
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   void _buildAndListenToUpdater() {
@@ -120,7 +140,9 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
     }
 
     return _caller = Caller<R>(
-      () async => widget._callBuilder(context, api),
+      /// variable is retrieve inside a closure what makes it possible to change
+      /// its' value over time.
+      () async => widget._callBuilder(context, api, _variable),
       interval: widget._interval,
       initialData: widget._initialDataBuilder(context, api),
       instantCall: widget._instantCall,
@@ -139,8 +161,19 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
   ///
   /// When combined with [instantCall] set to `false` it's the only
   /// way of calling api by starting triggering query lifecycle.
-  void call() {
-    _caller?.call();
+  ///
+  /// You can provide a variable which will be provided as the third
+  /// argument to [callBuilder] function
+  Future<R> call([V variable]) {
+    /// assign provided variable (event if it is null)
+    _variable = variable;
+
+    /// Make call with updated variable
+    final callFuture = _caller?.call();
+
+    /// retrieve old variable for next calls
+    _variable = widget._variable;
+    return callFuture;
   }
 
   /// Replace old caller responsible for handling requests and widget updates
@@ -154,18 +187,6 @@ class QueryState<R, A extends ApiBase> extends State<Query<R, A>> {
   void updateCaller() {
     _disposeCaller();
     _createAndReplaceCaller();
-  }
-
-  @override
-  void didUpdateWidget(Query<R, A> oldWidget) {
-    if (widget._interval != oldWidget._interval) {
-      /// dispose current caller
-      _disposeCaller();
-
-      /// replace old caller with new one
-      _createAndReplaceCaller();
-    }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
