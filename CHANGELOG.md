@@ -1,3 +1,5 @@
+## [0.2.0+2] - 09.02.2020
+* Simplify gettting started code examples inside readme.md
 ## [0.2.0] - 08.02.2020
 * Added experimental state management
   * Added `Updater` widget 

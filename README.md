@@ -37,10 +37,9 @@ dependencies:
       - [A simple yet powerful wrapper around `http` library which provide:](#a-simple-yet-powerful-wrapper-around-http-library-which-provide)
   - [IMPORTANT](#important)
   - [1. Getting Started](#1-getting-started)
-      - [1.1. First create your Api object class by extending `BaseApi` class](#11-first-create-your-api-object-class-by-extending-baseapi-class)
+      - [1.1. First create your Api class by extending `BaseApi` class](#11-first-create-your-api-class-by-extending-baseapi-class)
       - [1.2. Provide your Api instance down the widget tree](#12-provide-your-api-instance-down-the-widget-tree)
-      - [1.3.1. To make an api call in standard (ugly 😏) way](#131-to-make-an-api-call-in-standard-ugly-%f0%9f%98%8f-way)
-      - [1.3.2. Or simply make use of `Query` widget to make the call from widget tree](#132-or-simply-make-use-of-query-widget-to-make-the-call-from-widget-tree)
+      - [1.3. Make use of `Query` widget to make the API call from widget tree](#13-make-use-of-query-widget-to-make-the-api-call-from-widget-tree)
   - [2. Query widget](#2-query-widget)
   - [3. ApiLink](#3-apilink)
     - [3.1. About ApiLink](#31-about-apilink)
@@ -57,25 +56,15 @@ dependencies:
 
 ## 1. Getting Started
 
-#### 1.1. First create your Api object class by extending `BaseApi` class
+#### 1.1. First create your Api class by extending `BaseApi` class
 ```dart
 class Api extends ApiBase {
 
   Api({
-    /// BaseApi requires yoy to provide [Uri] object that points to your api 
     @required Uri uri,
-
-    /// Enable link support by passing [ApiLink]
-    /// object to super constructor (optional)
     ApiLink link,
-
-    /// Default headers for your application (optional)
     Map<String, String> defaultHeaders,
-
-    /// Api stores responsible for app state management.
     List<ApiStore> stores,
-
-    /// Call super constructor with provided data
   }) : super(
           uri: uri,
           defaultHeaders: defaultHeaders,
@@ -86,9 +75,8 @@ class Api extends ApiBase {
   /// Implement methods that will call your api
   Future<ExamplePhotoModel> getRandomPhoto() async {
 
-    /// It's important to call your api with [call] method as it triggers
-    /// [ApiRequest] build and links invocations
-    final response = await api.call(
+    /// It's important to triggers http requests with [call] method
+    final response = await call(
       endpoint: "/id/${Random().nextInt(50)}/info",
       method: HttpMethod.GET,
     );
@@ -104,23 +92,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    /// To provide your api use [RestuiProvider] widget
-    /// in place of [Api] put yours API class type 
     return RestuiProvider<Api>(
         apiBuilder: (_) => Api(
-
-          /// Pass base uri adress thats points to your api
           uri: Uri.parse("https://picsum.photos"),
-
-          /// Add links if needed
-          /// For more invormation look at [HeadersMapperLink] and [DebugLink]
-          /// links descriptions
           link: HeadersMapperLink(["uid", "client", "access-token"])
               .chain(DebugLink(printResponseBody: true)),
-          
-          /// List of stores provided to [ApiStorage].
-          /// Can be accessed by [storage] property on [ApiBase] class.
-          /// This is the only place when you can add stores to storage.
           stores: <ApiStore>[
             PhotoStore(),
           ],
@@ -133,52 +109,15 @@ class MyApp extends StatelessWidget {
   }
 }
 ```
-
-#### 1.3.1. To make an api call in standard (ugly 😏) way
-```dart
-class _ApiExampleScreenState extends State<ApiExampleScreen> {
-  ExamplePhotoModel _randomPhoto;
-
-  @override
-  void initState() {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _requestRandomPhoto();
-    })
-    super.initState();
-  }
-
-  Future<ExamplePhotoModel> _requestRandomPhoto() async {
-    
-    /// Retrieve api instance from context
-    final api = Query.of<Api>(context);
-
-    /// Make API request
-    final photo = await api.getRandomPhoto();
-    setState({
-      _randomPhoto = photo;
-    })
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    bool hasPhoto = _randomPhoto != null;
-    return Center(
-      /// Implementation ...
-    );
-  }
-}
-```
-#### 1.3.2. Or simply make use of `Query` widget to make the call from widget tree
+#### 1.3. Make use of `Query` widget to make the API call from widget tree
 For more information look **[HERE](#2-query-widget)**
 ```dart
 class _ApiExampleScreenState extends State<ApiExampleScreen> {
   @override
   Widget build(BuildContext context) {
     return Query<ExamplePhotoModel, Api, void>(
-      /// Make your api call and return data here
-      callBuilder: (BuildContext context, Api api, void variable) => api.photos.getRandom(),
-      /// [loading] indicates whether [callBuilder] method is ongoing.
-      /// value returned from [callBuilder] will be passed as a [value] argument.
+      callBuilder: (BuildContext context, Api api, void variable) =>
+          api.getRandomPhoto(),
       builder: (BuildContext context, bool loading, ExamplePhotoModel value) {
         return Center(
           /// Implementation ...
@@ -356,7 +295,7 @@ Sometimes there is a need to retrieve data saved inside a link or pass some data
 Api api = Query.of<Api>(context);
 
 /// Get first link of provided type
-OngoingRequestsCounterLink link = Api.getFirstLinkOfType<OngoingRequestsCounterLink>();
+OngoingRequestsCounterLink link = api.getFirstLinkOfType<OngoingRequestsCounterLink>();
 
 /// Do sth with your link data
 print(link.ongoingRequests);
@@ -371,7 +310,7 @@ Updating an app state based on api result is often a pain. This library simplifi
 Inside `example` directory you can find an example app and play with this library.
 
 ### 5.1 Api example
-<img src="./example/screen.png" width="400">
+![screen](./example/screen.png)
 
 ### 5.2 Api + state management
 ![screen](./example/state_management.gif)
