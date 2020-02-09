@@ -53,7 +53,7 @@ dependencies:
   - [5. Example app](#5-example-app)
     - [5.1 Api example](#51-api-example)
     - [5.2 Api + state management](#52-api--state-management)
-  - [5. TODO:](#5-todo)
+  - [6. TODO:](#6-todo)
 
 ## 1. Getting Started
 
@@ -376,7 +376,7 @@ Inside `example` directory you can find an example app and play with this librar
 ### 5.2 Api + state management
 ![screen](./example/state_management.gif)
   
-## 5. TODO:
+## 6. TODO:
   - Tests
   - GraphQLApiBase class responsible for graphQL requests
   - Improve readme
