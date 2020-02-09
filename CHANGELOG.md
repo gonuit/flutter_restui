@@ -1,3 +1,20 @@
+## [0.2.0] - 08.02.2020
+* Added experimental state management
+  * Added `Updater` widget 
+    * Added  `ApiLinkUpdater` widget
+    * Added  `ApiStoreUpdater` widget
+  * Added `ApiStorage` class
+    * Added `ApiStore` 
+      * Added `NotifierApiStore` class
+  * Added `NotifierApiLink` class
+* Improved `Query` widget
+  * Added `variable` argument
+  * Added `updaterBuilder` argument
+  * Added `schouldUpdate` argument
+  * Changed `initialData` to `initialDataBuilder` argument
+  * `QueryState` `call` method now accepts (optional) variable 
+## [0.1.0+1] - 07.02.2020
+* Fix readme bugs
 ## [0.1.0] - 07.02.2020
 * Initial release
 * Removed `provider` package from dependencies
