@@ -1,5 +1,5 @@
 name: restui
-description: A simple yet powerful HTTP API client library which allows handling middlewares by ApiLinks (strongly inspired by apollo graphQL client)
+description: A simple yet powerful HTTP API client library that main target is to remove separation between HTTP API and app state management
 version: 0.1.0+1
 repository: https://github.com/gonuit/flutter_restui
 homepage: https://github.com/gonuit/flutter_restui
