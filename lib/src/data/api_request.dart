@@ -56,7 +56,10 @@ class ApiRequest {
       if (body is Map)
         request.fields.addAll(body.cast<String, String>());
       else
-        throw ArgumentError('Invalid request body "$body".');
+        throw ArgumentError(
+          'Invalid request body "$body".\n'
+          'Multipart request body should be map',
+        );
     }
 
     /// Assign files to [MultipartRequest]

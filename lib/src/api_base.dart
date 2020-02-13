@@ -10,6 +10,7 @@ part of restui;
 abstract class ApiBase extends ApiLink {
   final ApiStorage _storage;
   final Uri _uri;
+  Uri get uri => _uri;
   final Map<String, String> _defaultHeaders;
   final ApiLink _link;
 
@@ -59,7 +60,7 @@ abstract class ApiBase extends ApiLink {
   /// then returns data received from it.
   Future<ApiResponse> call({
     @required String endpoint,
-    Map<String, dynamic> body = const <String, String>{},
+    dynamic body = const <String, String>{},
     Map<String, String> headers = const <String, String>{},
     Map<String, String> queryParameters = const <String, String>{},
     HttpMethod method = HttpMethod.POST,
@@ -76,13 +77,14 @@ abstract class ApiBase extends ApiLink {
     );
 
     /// Sets headers
-    Map<String, String> requestHeaders = {};
-    requestHeaders..addAll(_defaultHeaders)..addAll(headers);
+    Map<String, String> requestHeaders = Map<String, String>()
+      ..addAll(_defaultHeaders)
+      ..addAll(headers);
 
     final ApiRequest apiRequest = ApiRequest(
       uri,
       method: method,
-      headers: headers,
+      headers: requestHeaders,
       body: body,
       fileFields: fileFields,
       encoding: encoding,

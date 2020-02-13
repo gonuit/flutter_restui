@@ -66,6 +66,7 @@ class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
   void didChangeDependencies() {
     /// Called only once
     if (_caller == null) {
+      _variable = widget._variable;
       _buildAndListenToUpdater();
       _createAndReplaceCaller();
     }
@@ -74,16 +75,17 @@ class QueryState<A extends ApiBase, R, V> extends State<Query<A, R, V>> {
 
   @override
   void didUpdateWidget(Query<A, R, V> oldWidget) {
-    if (widget._variable != oldWidget._variable) {
-      /// Save variable from widget to state. (setState/rebuild is not needed)
-      _variable = widget._variable;
-    }
     if (widget._interval != oldWidget._interval) {
       /// dispose current caller
       _disposeCaller();
 
       /// replace old caller with new one
       _createAndReplaceCaller();
+    } else if (widget._variable != oldWidget._variable) {
+      /// Save variable from widget to state. (setState/rebuild is not needed)
+      _variable = widget._variable;
+      print(_variable);
+      _caller.call();
     }
     super.didUpdateWidget(oldWidget);
   }
