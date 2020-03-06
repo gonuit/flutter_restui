@@ -3,8 +3,9 @@
   * enabled `extensions` support for cleaner API
 * Removed `ApiStorage`
   * State management capability has been removed from this library
-* Bare minimum graphql client (experimental)
-* Remove state management from readme
+* Added Bare minimum graphql client (experimental)
+* Removed state management from readme
+* Added bare minimum graphql cache link
 ## [0.3.0] - 02.03.2020
 * Remove default `queryParameters` argument value
 * Change `HttpMethod` enum names case 

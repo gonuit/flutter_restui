@@ -28,6 +28,7 @@ part './src/utils/typedefs.dart';
 /// Links
 part './src/links/headers_mapper_link.dart';
 part './src/links/debug_link.dart';
+part './src/graphql/links/graphql_cache_link.dart';
 
 /// Data
 part './src/data/data.dart';

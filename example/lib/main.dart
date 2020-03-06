@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
           printRequestHeaders: true,
           printRequestBody: true,
           printResponseBody: true,
-        ),
+        ).chain(GraphqlCacheLink()),
       ),
       child: RestuiProvider<ExampleApi>(
         apiBuilder: (BuildContext context) => ExampleApi(
