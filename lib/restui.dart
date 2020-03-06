@@ -15,9 +15,6 @@ import 'package:http/http.dart' as http;
 part './src/api_base.dart';
 part './src/graphql_api.dart';
 
-/// ApiStorage
-part './src/storage/api_storage.dart';
-
 /// widgets
 part './src/widgets/query.dart';
 part './src/widgets/restui_provider.dart';
@@ -40,4 +37,3 @@ part './src/data/api_response.dart';
 /// Experimental widgets
 part './src/widgets/updaters/updater.dart';
 part './src/widgets/updaters/api_link_updater.dart';
-part './src/widgets/updaters/api_store_updater.dart';

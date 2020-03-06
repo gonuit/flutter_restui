@@ -34,6 +34,8 @@ extension HttpMethodExtension on HttpMethod {
   }
 }
 
+/// Represents File that can be attached to [ApiRequest] so can be sent to API
+/// with [MultipartRequest]
 class FileField {
   final File file;
   final String field;

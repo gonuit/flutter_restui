@@ -8,18 +8,15 @@ part of restui;
 ///
 /// Use call method to hand
 abstract class ApiBase extends ApiLink {
-  final ApiStorage _storage;
   final Uri _uri;
   Uri get uri => _uri;
   final Map<String, String> _defaultHeaders;
   final ApiLink _link;
 
-  ApiStorage get storage => _storage;
-
   /// Client is needed for persistent connection
   final http.Client _client;
 
-  /// Call api
+  /// Makes request to API
   @override
   @protected
   Future<ApiResponse> next(ApiRequest apiRequest) async {
@@ -31,7 +28,7 @@ abstract class ApiBase extends ApiLink {
 
     http.StreamedResponse streamedResponse = await _client.send(httpRequest);
 
-    return ApiResponse.fromResponse(
+    return ApiResponse.fromHttpResponse(
       await http.Response.fromStream(streamedResponse),
     );
   }
@@ -40,12 +37,10 @@ abstract class ApiBase extends ApiLink {
     @required Uri uri,
     ApiLink link,
     Map<String, String> defaultHeaders,
-    List<ApiStore> stores,
   })  : assert(uri != null, "Api widget should be provided with uri argument"),
         _uri = uri,
         _defaultHeaders = defaultHeaders ?? const <String, String>{},
         _link = link,
-        _storage = ApiStorage(stores),
         _client = http.Client() {
     /// If link is provided close link chain
     _link?._closeChainWith(this);

@@ -17,5 +17,5 @@ class ApiResponse {
   http.BaseRequest get request => _httpResponse.request;
   int get statusCode => _httpResponse.statusCode;
 
-  ApiResponse.fromResponse(this._httpResponse);
+  ApiResponse.fromHttpResponse(this._httpResponse);
 }

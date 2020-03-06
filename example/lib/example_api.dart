@@ -13,13 +13,11 @@ class ExampleApi extends ApiBase {
   ExampleApi({
     @required Uri uri,
     ApiLink link,
-    List<ApiStore> stores,
     Map<String, String> defaultHeaders,
   }) : super(
           uri: uri,
           defaultHeaders: defaultHeaders,
           link: link,
-          stores: stores,
         ) {
     _photos = _PhotoQueries(this);
   }

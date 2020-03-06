@@ -1,7 +1,5 @@
 part of restui;
 
-typedef TestFunction<T extends ApiStore> = bool Function(T value);
-
 /// RestuiProvider
 
 typedef ContextCreator<R> = R Function(BuildContext);

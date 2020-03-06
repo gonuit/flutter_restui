@@ -7,13 +7,11 @@ class ExampleGraphqQlApi extends GraphqlApi {
   ExampleGraphqQlApi({
     @required Uri uri,
     ApiLink link,
-    List<ApiStore> stores,
     Map<String, String> defaultHeaders,
   }) : super(
           uri: uri,
           defaultHeaders: defaultHeaders,
           link: link,
-          stores: stores,
         );
 
   Future<List<PokemonModel>> getPokemons(int count) async {

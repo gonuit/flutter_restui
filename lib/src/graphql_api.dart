@@ -69,14 +69,12 @@ class GraphqlApi extends ApiBase {
     @required Uri uri,
     ApiLink link,
     Map<String, String> defaultHeaders,
-    List<ApiStore> stores,
   }) : super(
           uri: uri,
           link: link,
           defaultHeaders: defaultHeaders != null
               ? (defaultHeaders..addAll(_graphqlDefaultHeaders))
               : Map.from(_graphqlDefaultHeaders),
-          stores: stores,
         );
 
   Future<GraphqlResponse> _call(GraphqlRequest request) async {

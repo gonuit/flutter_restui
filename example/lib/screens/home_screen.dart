@@ -1,5 +1,4 @@
 import 'package:example/screens/example_screen.dart';
-import 'package:example/screens/state_management/example_state_management_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'example_graphql_screen/example_graphql_screen.dart';
@@ -24,16 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ExampleScreen(),
-                  ),
-                );
-              },
-            ),
-            RaisedButton(
-              child: const Text("State management + api example"),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ExampleStateManagementScreen(),
                   ),
                 );
               },
