@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 
 /// ApiBase
 part './src/api_base.dart';
+part './src/graphql_api.dart';
 
 /// ApiStorage
 part './src/storage/api_storage.dart';

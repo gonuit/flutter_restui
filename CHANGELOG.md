@@ -1,3 +1,8 @@
+## [0.3.0] - 02.03.2020
+* Remove default `queryParameters` argument value
+* Change `HttpMethod` enum names case 
+## [0.2.0+3] - 01.03.2020
+* Fixed call method body parameter type
 ## [0.2.0+2] - 09.02.2020
 * Simplify gettting started code examples inside readme.md
 ## [0.2.0] - 08.02.2020
