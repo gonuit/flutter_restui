@@ -83,7 +83,7 @@ class GraphqlApi extends ApiBase {
     final response = await call(
       endpoint: uri.path,
       body: jsonEncode(request.toMap()),
-      method: HttpMethod.POST,
+      method: HttpMethod.post,
     );
     return GraphqlResponse.fromJson(jsonDecode(response.body));
   }

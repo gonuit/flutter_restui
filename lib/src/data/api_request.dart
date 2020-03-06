@@ -31,15 +31,15 @@ class ApiRequest {
 
   static String _getHttpMethodString(HttpMethod method) {
     switch (method) {
-      case HttpMethod.GET:
+      case HttpMethod.get:
         return "GET";
-      case HttpMethod.POST:
+      case HttpMethod.post:
         return "POST";
-      case HttpMethod.DELETE:
+      case HttpMethod.delete:
         return "DELETE";
-      case HttpMethod.PATCH:
+      case HttpMethod.patch:
         return "PATCH";
-      case HttpMethod.PUT:
+      case HttpMethod.put:
         return "PUT";
       default:
         throw ApiException("The HTTP method provided was not recognized");

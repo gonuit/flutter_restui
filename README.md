@@ -78,7 +78,7 @@ class Api extends ApiBase {
     /// It's important to triggers http requests with [call] method
     final response = await call(
       endpoint: "/id/${Random().nextInt(50)}/info",
-      method: HttpMethod.GET,
+      method: HttpMethod.get,
     );
     return ExamplePhotoModel.fromJson(json.decode(response.body));
   }

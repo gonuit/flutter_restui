@@ -32,7 +32,7 @@ class _PhotoQueries {
   Future<ExamplePhotoModel> getRandom() async {
     final apiResponse = await api.call(
       endpoint: "/id/${Random().nextInt(50)}/info",
-      method: HttpMethod.GET,
+      method: HttpMethod.get,
     );
     return ExamplePhotoModel.fromJson(
       json.decode(apiResponse.body),
@@ -42,7 +42,7 @@ class _PhotoQueries {
   Future<ExamplePhotoModel> getById(String id) async {
     final apiResponse = await api.call(
       endpoint: "/id/$id/info",
-      method: HttpMethod.GET,
+      method: HttpMethod.get,
     );
     return ExamplePhotoModel.fromJson(
       json.decode(apiResponse.body),

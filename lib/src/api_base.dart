@@ -60,10 +60,10 @@ abstract class ApiBase extends ApiLink {
   /// then returns data received from it.
   Future<ApiResponse> call({
     @required String endpoint,
-    dynamic body = const <String, String>{},
+    dynamic body,
     Map<String, String> headers = const <String, String>{},
-    Map<String, String> queryParameters = const <String, String>{},
-    HttpMethod method = HttpMethod.POST,
+    Map<String, String> queryParameters,
+    HttpMethod method = HttpMethod.post,
     List<FileField> fileFields,
     Encoding encoding,
     bool multipart,
