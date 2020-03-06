@@ -37,3 +37,11 @@ part './src/data/api_response.dart';
 /// Experimental widgets
 part './src/widgets/updaters/updater.dart';
 part './src/widgets/updaters/api_link_updater.dart';
+
+/// graphql request
+part './src/graphql/graphql_request.dart';
+
+/// graphql models
+part './src/graphql/models/graphql_error_location.dart';
+part './src/graphql/models/graphql_error.dart';
+part './src/graphql/models/graphql_response.dart';
