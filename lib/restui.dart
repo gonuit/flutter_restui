@@ -13,7 +13,7 @@ import 'package:http/http.dart' as http;
 
 /// ApiBase
 part './src/api_base.dart';
-part './src/graphql_api.dart';
+part './src/graphql/graphql_api_base.dart';
 
 /// widgets
 part './src/widgets/query.dart';
@@ -38,10 +38,8 @@ part './src/data/api_response.dart';
 part './src/widgets/updaters/updater.dart';
 part './src/widgets/updaters/api_link_updater.dart';
 
-/// graphql request
-part './src/graphql/graphql_request.dart';
-
 /// graphql models
+part './src/graphql/models/graphql_request.dart';
 part './src/graphql/models/graphql_error_location.dart';
 part './src/graphql/models/graphql_error.dart';
 part './src/graphql/models/graphql_response.dart';

@@ -8,17 +8,16 @@
   
 | Feature                             |  Status  |
 | :---------------------------------- | :------: |
-| HTTP Requests                       |    ✅    |
+| HTTP requests                       |    ✅    |
 | HTTP interval requests              |    ✅    |
-| HTTP Requests from widget tree      |    ✅    |
+| HTTP requests from widget tree      |  ✅ 🧪   |
 | HTTP Middlewares [ApiLink]          |  ✅ 🧪   |
-| App state management                |  ✅ 🧪   |
-| State management from widget tree   |  ✅ 🧪   |
-| Client for graphQL                  |    ⚙️     |
+| GraphQL client                      |  🧪 ⚙️    |
 | ApiLink for request caching         |    ❌    |
+| ApiLink for graphql request caching |    ❌    |
 
-✅ - done  
-🧪 - experimental  
+✅ - ready, minor API changes may occur  
+🧪 - experimental, API   
 ⚙️  - work in progress  
 ❌ - not implemented  
   
@@ -28,7 +27,7 @@
 This library is under development, breaking API changes might still happen. If you would like to make use of this library please make sure to provide which version you want to use e.g:
 ```yaml
 dependencies:
-  restui: 0.1.0
+  restui: 0.4.0
 ```
   
 ---
@@ -39,7 +38,8 @@ dependencies:
   - [1. Getting Started](#1-getting-started)
       - [1.1. First create your Api class by extending `BaseApi` class](#11-first-create-your-api-class-by-extending-baseapi-class)
       - [1.2. Provide your Api instance down the widget tree](#12-provide-your-api-instance-down-the-widget-tree)
-      - [1.3. Make use of `Query` widget to make the API call from widget tree](#13-make-use-of-query-widget-to-make-the-api-call-from-widget-tree)
+      - [1.3.1 Make use of `Query` widget to make the API call from widget tree](#131-make-use-of-query-widget-to-make-the-api-call-from-widget-tree)
+      - [1.3.2 Call api in old-school way](#132-call-api-in-old-school-way)
   - [2. Query widget](#2-query-widget)
   - [3. ApiLink](#3-apilink)
     - [3.1. About ApiLink](#31-about-apilink)
@@ -48,11 +48,9 @@ dependencies:
     - [3.3. Create own ApiLink](#33-create-own-apilink)
       - [3.3.1. Create link](#331-create-link)
       - [3.3.2. Get data from the link](#332-get-data-from-the-link)
-  - [4. State management (experimental)](#4-state-management-experimental)
-  - [5. Example app](#5-example-app)
-    - [5.1 Api example](#51-api-example)
-    - [5.2 Api + state management](#52-api--state-management)
-  - [6. TODO:](#6-todo)
+  - [4. Example app](#4-example-app)
+    - [4.1 Api example](#41-api-example)
+  - [5. TODO:](#5-todo)
 
 ## 1. Getting Started
 
@@ -72,10 +70,10 @@ class Api extends ApiBase {
           stores: stores,
         );
 
-  /// Implement methods that will call your api
+  /// Implement api request methods 
   Future<ExamplePhotoModel> getRandomPhoto() async {
 
-    /// It's important to triggers http requests with [call] method
+    /// Use [call] method to make api request
     final response = await call(
       endpoint: "/id/${Random().nextInt(50)}/info",
       method: HttpMethod.get,
@@ -109,7 +107,7 @@ class MyApp extends StatelessWidget {
   }
 }
 ```
-#### 1.3. Make use of `Query` widget to make the API call from widget tree
+#### 1.3.1 Make use of `Query` widget to make the API call from widget tree
 For more information look **[HERE](#2-query-widget)**
 ```dart
 class _ApiExampleScreenState extends State<ApiExampleScreen> {
@@ -127,12 +125,31 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
   }
 }
 ```
+#### 1.3.2 Call api in old-school way
+```dart
+class _ApiExampleScreenState extends State<ApiExampleScreen> {
+
+  @override
+  void didChangeDependencies() {
+    final api = Query.of<Api>(context);
+    api.getRandomPhoto().then((ExamplePhotoModel photo) {
+      // Do sth with response
+    })
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    /// ...
+  }
+}
+```
+
 
 ## 2. Query widget
 Query widget is the hearth of Restui library. It allows you to handle API
-calls and app state management from one widget.
+calls.
   
-For example of state management and api calls look at example app.
 ```dart
 class _ApiExampleScreenState extends State<ApiExampleScreen> {
  
@@ -206,7 +223,7 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
       /// After that you are able to retrieve this store and update widget by calling [builder]
       /// method every time it will notify listeners.
       updaterBuilder: (BuildContext context, Api api) =>
-          api.storage.getFirstStoreOfType<PhotoStore>(),
+          api.storage.getFirstLinkOfType<AuthNotifierLink>(),
 
       /// This method is called before every [builder] invocation triggered by [Listenable]
       /// returned from [updaterBuilder] or [callBuilder] method invocation.
@@ -302,21 +319,14 @@ print(link.ongoingRequests);
 ```
 `Api` should be replaced with your API class name that extends `ApiBase`.
 
-## 4. State management (experimental)
-Often inside our app state we are keeping modified results of our api requests.
-Updating an app state based on api result is often a pain. This library simplifies this process.
-
-## 5. Example app
+## 4. Example app
 Inside `example` directory you can find an example app and play with this library.
 
-### 5.1 Api example
+### 4.1 Api example
 ![screen](./example/screen.png)
 
-### 5.2 Api + state management
-![screen](./example/state_management.gif)
   
-## 6. TODO:
+## 5. TODO:
   - Tests
-  - GraphQLApiBase class responsible for graphQL requests
   - Improve readme
   - Add `CacheLink` which will be responsible for request caching

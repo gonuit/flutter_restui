@@ -39,7 +39,7 @@ abstract class ApiLink {
 
   @nonVirtual
   ApiLink chain(ApiLink nextLink) {
-    assert(!_closed, "You can't edit your link after attaching it to ApiBase");
+    assert(!_closed, "You can't modify your links chain after attaching it to ApiBase");
     if (_closed) return null;
 
     _nextLink = nextLink;

@@ -1,12 +1,12 @@
 part of restui;
 
 @experimental
-class GraphqlApi extends ApiBase {
+class GraphqlApiBase extends ApiBase {
   static const _graphqlDefaultHeaders = <String, String>{
     "Content-Type": "application/json"
   };
 
-  GraphqlApi({
+  GraphqlApiBase({
     @required Uri uri,
     ApiLink link,
     Map<String, String> defaultHeaders,

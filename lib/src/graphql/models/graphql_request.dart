@@ -6,7 +6,7 @@ class GraphqlRequest {
   final String operationName;
   final Map<String, String> variables;
 
-  GraphqlRequest({
+  const GraphqlRequest({
     @required this.query,
     this.operationName,
     this.variables,

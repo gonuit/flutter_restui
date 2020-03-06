@@ -3,7 +3,7 @@ import 'package:restui/restui.dart';
 
 import 'screens/example_graphql_screen/pokemon_model.dart';
 
-class ExampleGraphqQlApi extends GraphqlApi {
+class ExampleGraphqQlApi extends GraphqlApiBase {
   ExampleGraphqQlApi({
     @required Uri uri,
     ApiLink link,
