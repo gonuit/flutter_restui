@@ -27,7 +27,7 @@ abstract class ApiBase extends ApiLink {
       throw ApiException("uri cannot be null");
     }
 
-    http.BaseRequest httpRequest = await apiRequest._httpRequest;
+    http.BaseRequest httpRequest = await apiRequest._buildRequest();
 
     http.StreamedResponse streamedResponse = await _client.send(httpRequest);
 

@@ -1,12 +1,13 @@
 part of restui;
 
 class ApiRequest {
-  /// Here you can assing your data that will be passed to the next link
   Uri uri;
   HttpMethod method;
   Encoding encoding;
   bool multipart;
   dynamic body;
+
+  /// Here you can assign your data that will be passed to the next link
   final Map<String, dynamic> linkData = {};
   final List<FileField> fileFields = [];
   final Map<String, String> headers = {};
@@ -24,31 +25,17 @@ class ApiRequest {
     if (headers != null) this.headers.addAll(headers);
   }
 
+  /// If [ApiRequest] contains files or [multipart] property is set to true
+  /// [isMultipart] equals true
   bool get isMultipart => multipart == true || fileFields.isNotEmpty;
 
-  Future<http.BaseRequest> get _httpRequest =>
-      isMultipart ? _makeMultipartHttpRequest() : _makeHttpRequest();
+  /// Builds request depending on `isMultiplart` accessor
+  Future<http.BaseRequest> _buildRequest() =>
+      isMultipart ? _buildMultipartHttpRequest() : _buildHttpRequest();
 
-  static String _getHttpMethodString(HttpMethod method) {
-    switch (method) {
-      case HttpMethod.get:
-        return "GET";
-      case HttpMethod.post:
-        return "POST";
-      case HttpMethod.delete:
-        return "DELETE";
-      case HttpMethod.patch:
-        return "PATCH";
-      case HttpMethod.put:
-        return "PUT";
-      default:
-        throw ApiException("The HTTP method provided was not recognized");
-    }
-  }
-
-  /// Make [MultipartRequest] without files
-  Future<http.BaseRequest> _makeMultipartHttpRequest() async {
-    final request = http.MultipartRequest(_getHttpMethodString(method), uri)
+  /// Builds [MultipartRequest]
+  Future<http.BaseRequest> _buildMultipartHttpRequest() async {
+    final request = http.MultipartRequest(method.value, uri)
       ..headers.addAll(headers);
 
     /// Assign body if it is map
@@ -58,7 +45,7 @@ class ApiRequest {
       else
         throw ArgumentError(
           'Invalid request body "$body".\n'
-          'Multipart request body should be map',
+          'Multipart request body should be Map<String, String>',
         );
     }
 
@@ -69,9 +56,9 @@ class ApiRequest {
     return request;
   }
 
-  /// Make [Request] without files
-  Future<http.BaseRequest> _makeHttpRequest() async {
-    final request = http.Request(_getHttpMethodString(method), uri);
+  /// Buils [Request]
+  Future<http.BaseRequest> _buildHttpRequest() async {
+    final request = http.Request(method.value, uri);
 
     if (headers != null) request.headers.addAll(headers);
     if (encoding != null) request.encoding = encoding;
