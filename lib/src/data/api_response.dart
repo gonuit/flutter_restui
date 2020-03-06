@@ -1,5 +1,7 @@
 part of restui;
 
+// TODO: Reconsider extending http.Response class
+
 class ApiResponse {
   /// Here you can assing your data that will be passed to the next link
   final Map<String, dynamic> linkData = {};

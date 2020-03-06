@@ -47,7 +47,10 @@ class FileField {
     @required this.file,
     this.fileName,
     this.contentType,
-  });
+  }) : assert(
+          file != null && field != null,
+          "file and field arguments cannot be null",
+        );
 
   /// Convert FileField to multipart file
   Future<http.MultipartFile> toMultipartFile() => http.MultipartFile.fromPath(
@@ -56,4 +59,12 @@ class FileField {
         contentType: contentType,
         filename: fileName,
       );
+
+  @override
+  String toString() => <String, dynamic>{
+        "file": file,
+        "field": field,
+        "fileName": fileName,
+        "contentType": contentType,
+      }.toString();
 }

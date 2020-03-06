@@ -78,7 +78,7 @@ abstract class ApiBase extends ApiLink {
 
     final ApiRequest apiRequest = ApiRequest(
       uri,
-      method: method,
+      method,
       headers: requestHeaders,
       body: body,
       fileFields: fileFields,

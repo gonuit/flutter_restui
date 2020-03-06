@@ -1,3 +1,8 @@
+## [0.4.0] - 02.03.2020
+* Bumped dart min dart sdk version to 2.6.0 
+  * enabled `extensions` support for cleaner API
+* Removed `ApiStorage`
+  * State management capability has been removed from this library
 ## [0.3.0] - 02.03.2020
 * Remove default `queryParameters` argument value
 * Change `HttpMethod` enum names case 

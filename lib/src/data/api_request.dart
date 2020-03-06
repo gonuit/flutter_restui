@@ -13,13 +13,13 @@ class ApiRequest {
   final Map<String, String> headers = {};
 
   ApiRequest(
-    this.uri, {
-    @required this.method,
-    @required Map<String, String> headers,
-    @required List<FileField> fileFields,
-    @required this.body,
-    @required this.encoding,
-    @required this.multipart,
+    this.uri,
+    this.method, {
+    Map<String, String> headers,
+    List<FileField> fileFields,
+    this.body,
+    this.encoding,
+    this.multipart,
   }) {
     if (fileFields != null) this.fileFields.addAll(fileFields);
     if (headers != null) this.headers.addAll(headers);
@@ -74,4 +74,16 @@ class ApiRequest {
     }
     return request;
   }
+
+  @override
+  String toString() => <String, dynamic>{
+        "uri": uri,
+        "body": body,
+        "encoding": encoding,
+        "fileFields": fileFields,
+        "headers": headers,
+        "linkData": linkData,
+        "method": method.value,
+        "multipart": multipart,
+      }.toString();
 }
