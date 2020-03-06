@@ -2,6 +2,8 @@ import 'package:example/screens/example_screen.dart';
 import 'package:example/screens/state_management/example_state_management_screen.dart';
 import 'package:flutter/material.dart';
 
+import 'example_graphql_screen/example_graphql_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -32,6 +34,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ExampleStateManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            RaisedButton(
+              child: const Text("Graphql api example"),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => GraphqlExampleScreen(),
                   ),
                 );
               },

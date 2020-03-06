@@ -1,12 +1,12 @@
 part of restui;
 
 enum HttpMethod {
-  POST,
-  GET,
-  DELETE,
-  PUT,
-  PATCH,
-  HEAD,
+  post,
+  get,
+  delete,
+  put,
+  patch,
+  head,
 }
 
 class FileField {
