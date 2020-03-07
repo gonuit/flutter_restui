@@ -14,18 +14,22 @@ class ExampleGraphqQlApi extends GraphqlApiBase {
           link: link,
         );
 
-  Future<List<PokemonModel>> getPokemons(int count) async {
-    final response = await query(GraphqlRequest(
-        query: "{pokemons(first: $count) {id,name,image,}}".trim(),
-        operationName: null,
-        variables: null));
+  GraphqlRequest<List<PokemonModel>> getPokemons(int count) {
+    return GraphqlRequest(
+      api: this,
+      query: "{pokemons(first: $count) {id,name,image,}}".trim(),
+      operationName: null,
+      variables: null,
+      decoder: (GraphqlResponse response) {
+        if (response.errors != null) {
+          return null;
+        }
+        final pokemons = (response.data["pokemons"] as List)
+            .map((pokemon) => PokemonModel.fromJson(pokemon))
+            .toList();
 
-    if (response.errors != null) {
-      print("EMPTY!");
-    }
-    final pokemnos = (response.data["pokemons"] as List)
-        .map((pokemon) => PokemonModel.fromJson(pokemon))
-        .toList();
-    return pokemnos;
+        return pokemons;
+      },
+    );
   }
 }

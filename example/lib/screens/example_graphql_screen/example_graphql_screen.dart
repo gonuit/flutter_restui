@@ -9,27 +9,26 @@ class GraphqlExampleScreen extends StatefulWidget {
 }
 
 class GraphqlExampleScreenState extends State<GraphqlExampleScreen> {
-  int _pokemonCount = 1;
+  int _pokemonCount = 500;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Restui Graphql example")),
       body: SafeArea(
-        child: Query<ExampleGraphqQlApi, List<PokemonModel>, int>(
-          variable: _pokemonCount,
-          callBuilder: (
-            BuildContext context,
-            ExampleGraphqQlApi api,
-            int variable,
-          ) async =>
-              api.getPokemons(variable),
-          builder: (BuildContext context, bool loading,
-              List<PokemonModel> pokemons) {
-            if (loading && pokemons == null)
-              return Center(child: CircularProgressIndicator());
+        child: Graphql<ExampleGraphqQlApi, List<PokemonModel>>(
+          callBuilder: (context, api) => api.getPokemons(_pokemonCount),
+          builder: (
+            context,
+            response,
+            error, {
+            decoder,
+          }) {
+            final loading = response == null;
 
-            if (pokemons == null) return Center(child: Text("No pokemons"));
+            if (loading) return Center(child: CircularProgressIndicator());
+
+            final pokemons = decoder.call(response);
 
             return Stack(
               children: <Widget>[

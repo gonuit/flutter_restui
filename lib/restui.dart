@@ -44,3 +44,4 @@ part './src/graphql/models/graphql_request.dart';
 part './src/graphql/models/graphql_error_location.dart';
 part './src/graphql/models/graphql_error.dart';
 part './src/graphql/models/graphql_response.dart';
+part './src/graphql/widgets/graphql.dart';

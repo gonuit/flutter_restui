@@ -35,6 +35,7 @@ dependencies:
 - [Restui](#restui)
       - [A simple yet powerful wrapper around `http` library which provide:](#a-simple-yet-powerful-wrapper-around-http-library-which-provide)
   - [IMPORTANT](#important)
+  - [0. Quick stark](#0-quick-stark)
   - [1. Getting Started](#1-getting-started)
       - [1.1. First create your Api class by extending `BaseApi` class](#11-first-create-your-api-class-by-extending-baseapi-class)
       - [1.2. Provide your Api instance down the widget tree](#12-provide-your-api-instance-down-the-widget-tree)
@@ -52,6 +53,34 @@ dependencies:
     - [4.1 Api example](#41-api-example)
   - [5. TODO:](#5-todo)
 
+## 0. Quick stark
+```dart
+// define your api class
+class Api extends ApiBase {
+  Api({
+    @required Uri uri,
+  }) : super(uri: uri);
+  
+  // Define your requests
+  Future<ExamplePhotoModel> getRandomPhoto() async {
+    final response = await call(
+      endpoint: "/id/${Random().nextInt(50)}/info",
+      method: HttpMethod.get,
+    );
+    return ExamplePhotoModel.fromJson(json.decode(response.body));
+  }
+}
+
+void main() async {
+  // instantiate your API class
+  final api = Api(uri: Uri.parse("example.com"));
+
+  /// make API request
+  final photo = await api.getRandomPhoto();
+}
+```
+
+
 ## 1. Getting Started
 
 #### 1.1. First create your Api class by extending `BaseApi` class
@@ -62,12 +91,10 @@ class Api extends ApiBase {
     @required Uri uri,
     ApiLink link,
     Map<String, String> defaultHeaders,
-    List<ApiStore> stores,
   }) : super(
           uri: uri,
           defaultHeaders: defaultHeaders,
           link: link,
-          stores: stores,
         );
 
   /// Implement api request methods 
@@ -95,9 +122,6 @@ class MyApp extends StatelessWidget {
           uri: Uri.parse("https://picsum.photos"),
           link: HeadersMapperLink(["uid", "client", "access-token"])
               .chain(DebugLink(printResponseBody: true)),
-          stores: <ApiStore>[
-            PhotoStore(),
-          ],
         ),
         child: MaterialApp(
           title: 'flutter_starter_app',
@@ -217,11 +241,6 @@ class _ApiExampleScreenState extends State<ApiExampleScreen> {
       ///
       /// [Query] widget will call [builder] every time when [Listenable] returned from
       /// [updaterBuilder] will notify his listeners.
-      ///
-      /// TIP:
-      /// You can use [NotifierApiStore] class to create your own [ApiStore]  with [ChangeNotifier].
-      /// After that you are able to retrieve this store and update widget by calling [builder]
-      /// method every time it will notify listeners.
       updaterBuilder: (BuildContext context, Api api) =>
           api.storage.getFirstLinkOfType<AuthNotifierLink>(),
 
