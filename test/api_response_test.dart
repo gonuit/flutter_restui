@@ -10,15 +10,17 @@ void main() {
     Uri.parse("example.com"),
   );
   test("Constructs ApiResponse from http response correctly", () {
-    response = ApiResponse.fromHttpResponse(Response(
-      "body",
-      200,
-      headers: const <String, String>{"header": "header"},
-      isRedirect: false,
-      persistentConnection: true,
-      reasonPhrase: "reasonPhrase",
-      request: request,
-    ));
+    response = ApiResponse.fromHttp(
+        request,
+        Response(
+          "body",
+          200,
+          headers: const <String, String>{"header": "header"},
+          isRedirect: false,
+          persistentConnection: true,
+          reasonPhrase: "reasonPhrase",
+          request: request,
+        ));
 
     expect(
       response,

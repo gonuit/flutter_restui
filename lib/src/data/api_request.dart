@@ -29,8 +29,8 @@ class ApiRequest {
   /// [isMultipart] equals true
   bool get isMultipart => multipart == true || fileFields.isNotEmpty;
 
-  /// Builds request depending on `isMultiplart` accessor
-  Future<http.BaseRequest> _buildRequest() =>
+  /// Builds http request of proper type depending on `isMultiplart` accessor
+  Future<http.BaseRequest> buildHttpRequest() =>
       isMultipart ? _buildMultipartHttpRequest() : _buildHttpRequest();
 
   /// Builds [MultipartRequest]

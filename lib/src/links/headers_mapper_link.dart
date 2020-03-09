@@ -50,5 +50,5 @@ class HeadersMapperLink extends ApiLink {
   }
 
   @override
-  String toString() => jsonEncode(_headers);
+  String toString() => "$runtimeType: ${jsonEncode(_headers)}";
 }

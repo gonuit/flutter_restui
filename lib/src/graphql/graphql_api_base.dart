@@ -47,6 +47,29 @@ enum GraphqlFetchPolicy {
   cacheAndNetwork,
 }
 
+class GraphqlLink extends HttpLink {
+  GraphqlLink([http.Client client]) : super(client);
+
+  /// Makes request to API
+  @override
+  @protected
+  Future<ApiResponse> next(ApiRequest request) async {
+    final response = await super.next(request);
+
+    return GraphqlResponse.fromHttp(
+      response.request,
+      response,
+      source: GraphqlResponseSource.network,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    client.close();
+  }
+}
+
 @experimental
 class GraphqlApiBase extends ApiBase {
   static const _graphqlDefaultHeaders = <String, String>{
@@ -63,11 +86,16 @@ class GraphqlApiBase extends ApiBase {
   })  : _cache = cache ?? GraphqlInMemoryCache(),
         super(
           uri: uri,
-          link: link,
+          link: link ?? GraphqlLink(),
           defaultHeaders: defaultHeaders != null
               ? (defaultHeaders..addAll(_graphqlDefaultHeaders))
               : Map.from(_graphqlDefaultHeaders),
-        );
+        ) {
+    assert(
+      _link._firstWhere((apiLink) => (apiLink is GraphqlLink)) != null,
+      "ApiLinks chain should contain GraphqlLink",
+    );
+  }
 
   Future<GraphqlResponse> _call(GraphqlRequest request) async {
     final response = await call(
@@ -75,10 +103,9 @@ class GraphqlApiBase extends ApiBase {
       body: jsonEncode(request.toMap()),
       method: HttpMethod.post,
     );
-    return GraphqlResponse.fromJson(
-      jsonDecode(response.body),
-      source: GraphqlResponseSource.network,
-    );
+    assert(response is GraphqlResponse,
+        "Response should be of type GraphqlResponse");
+    return response as GraphqlResponse;
   }
 
   /// TODO: add fetch policy
