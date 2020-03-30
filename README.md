@@ -12,6 +12,7 @@
 | HTTP interval requests              |    ✅    |
 | HTTP requests from widget tree      |  ✅ 🧪   |
 | HTTP Middlewares [ApiLink]          |  ✅ 🧪   |
+| HTTP Link                           |  ✅ 🧪   |
 | GraphQL client                      |  🧪 ⚙️    |
 | Graphql request caching             |  🧪 ⚙️    |
 | ApiLink for request caching         |    ❌    |
