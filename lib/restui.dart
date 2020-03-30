@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 
 /// ApiBase
 part './src/api_base.dart';
-part './src/graphql/graphql_api_base.dart';
 
 /// widgets
 part './src/widgets/query.dart';
@@ -27,7 +26,7 @@ part './src/utils/typedefs.dart';
 /// Links
 part './src/links/headers_mapper_link.dart';
 part './src/links/debug_link.dart';
-part './src/graphql/links/graphql_cache_link.dart';
+part './src/links/http_link.dart';
 
 /// Data
 part './src/data/data.dart';
@@ -37,10 +36,3 @@ part './src/data/api_response.dart';
 /// Experimental widgets
 part './src/widgets/updaters/updater.dart';
 part './src/widgets/updaters/api_link_updater.dart';
-
-/// graphql models
-part './src/graphql/models/graphql_request.dart';
-part './src/graphql/models/graphql_error_location.dart';
-part './src/graphql/models/graphql_error.dart';
-part './src/graphql/models/graphql_response.dart';
-part './src/graphql/widgets/graphql.dart';

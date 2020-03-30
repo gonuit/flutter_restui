@@ -10,18 +10,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return
-        // RestuiProvider<ExampleGraphqQlApi>(
-        //   apiBuilder: (BuildContext context) => ExampleGraphqQlApi(
-        //     uri: Uri.parse("https://graphql-pokemon.now.sh"),
-        //     link: DebugLink(
-        //       printRequestHeaders: true,
-        //       printRequestBody: true,
-        //       printResponseBody: true,
-        //     )..chain(GraphqlLink()),
-        //   ),
-        //   child:
-        RestuiProvider<ExampleApi>(
+    return RestuiProvider<ExampleApi>(
       apiBuilder: (BuildContext context) => ExampleApi(
         uri: Uri.parse("https://picsum.photos"),
         link: HeadersMapperLink(['connection'], debug: true)
@@ -35,7 +24,6 @@ class MyApp extends StatelessWidget {
         ),
         home: HomeScreen(),
       ),
-      // ),
     );
   }
 }

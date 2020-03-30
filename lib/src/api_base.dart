@@ -1,35 +1,5 @@
 part of restui;
 
-class HttpLink with ApiLink {
-  /// Client is needed for persistent connection
-  final http.Client _client;
-  http.Client get client => _client;
-
-  HttpLink([http.Client client]) : _client = client ?? http.Client();
-
-  @override
-  @protected
-  Future<ApiResponse> next(ApiRequest apiRequest) async {
-    http.BaseRequest httpRequest = await apiRequest.buildHttpRequest();
-
-    http.StreamedResponse streamedResponse = await _client.send(
-      httpRequest,
-    );
-
-    http.Response httpResponse = await http.Response.fromStream(
-      streamedResponse,
-    );
-
-    return ApiResponse.fromHttp(httpRequest, httpResponse);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _client.close();
-  }
-}
-
 /// This class is a simple wrapper around `http` library
 /// it's main target is to handle auth headers.
 ///
@@ -78,8 +48,7 @@ abstract class ApiBase {
         ..addAll(additionalHeaders ?? {}));
 
   /// Make API request by triggering [ApiLink]s [next] methods
-  @protected
-  Future<ApiResponse> makeRequest(ApiRequest request) {
+  Future<ApiResponse> callWithRequest(ApiRequest request) {
     return _link.next(request);
   }
 
@@ -112,7 +81,7 @@ abstract class ApiBase {
       multipart: multipart,
     );
 
-    return makeRequest(apiRequest);
+    return callWithRequest(apiRequest);
   }
 
   /// closes http client

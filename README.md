@@ -13,7 +13,7 @@
 | HTTP requests from widget tree      |  ✅ 🧪   |
 | HTTP Middlewares [ApiLink]          |  ✅ 🧪   |
 | GraphQL client                      |  🧪 ⚙️    |
-| ApiLink for graphql request caching |  🧪 ⚙️    |
+| Graphql request caching             |  🧪 ⚙️    |
 | ApiLink for request caching         |    ❌    |
 
 ✅ - ready, minor API changes may occur  

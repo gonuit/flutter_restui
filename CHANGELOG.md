@@ -1,11 +1,11 @@
-## [0.4.0] - 02.03.2020
+## [0.4.0+1] - 02.04.2020
 * Bumped dart min dart sdk version to 2.6.0 
   * enabled `extensions` support for cleaner API
 * Removed `ApiStorage`
   * State management capability has been removed from this library
-* Added Bare minimum graphql client (experimental)
-* Removed state management from readme
-* Added bare minimum graphql cache link
+  * Removed state management from readme
+* Added `HttpLink`
+* Refactored `ApiBase` class
 ## [0.3.0] - 02.03.2020
 * Remove default `queryParameters` argument value
 * Change `HttpMethod` enum names case 

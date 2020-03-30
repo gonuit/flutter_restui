@@ -30,8 +30,24 @@ class ApiRequest {
   bool get isMultipart => multipart == true || fileFields.isNotEmpty;
 
   /// Builds http request of proper type depending on `isMultiplart` accessor
-  Future<http.BaseRequest> buildHttpRequest() =>
-      isMultipart ? _buildMultipartHttpRequest() : _buildHttpRequest();
+  Future<ApiResponse> send(http.Client client) async {
+    final httpRequest = await (isMultipart
+        ? _buildMultipartHttpRequest()
+        : _buildHttpRequest());
+
+    http.StreamedResponse streamedResponse = await client.send(
+      httpRequest,
+    );
+
+    http.Response httpResponse = await http.Response.fromStream(
+      streamedResponse,
+    );
+
+    return ApiResponse.fromHttp(
+      httpRequest,
+      httpResponse,
+    );
+  }
 
   /// Builds [MultipartRequest]
   Future<http.BaseRequest> _buildMultipartHttpRequest() async {
