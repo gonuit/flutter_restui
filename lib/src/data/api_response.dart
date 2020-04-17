@@ -4,7 +4,7 @@ class ApiResponse extends http.Response {
   /// Here you can assing your data that will be passed to the next link
   final Map<String, dynamic> linkData = {};
 
-  ApiResponse.fromHttp(http.Request request, http.Response response)
+  ApiResponse.fromHttp(http.BaseRequest request, http.Response response)
       : super(
           response.body,
           response.statusCode,

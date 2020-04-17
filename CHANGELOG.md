@@ -1,3 +1,5 @@
+## [0.4.0+3] - 17 Apr. 2020
+* Fixed multipart request/response type issue
 ## [0.4.0+2] - 30.03.2020
 * Bumped dart min dart sdk version to 2.6.0 
   * enabled `extensions` support for cleaner API
